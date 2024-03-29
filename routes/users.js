@@ -5,6 +5,7 @@ const {
   validateNewUser,
   validateFinishUser,
   validateNewAdmin,
+  validateDeleteUser
 } = require("../middleware/validator/userValidator");
 
 /**
@@ -188,6 +189,8 @@ router.post("/users/createAdmin", validateNewAdmin, authMiddleware, userControll
  *   delete:
  *     summary: Delete a user by ID
  *     tags: [Users]
+ *     requestHeader:
+ *       required: true
  *     parameters:
  *       - in: path
  *         name: userId
@@ -203,6 +206,12 @@ router.post("/users/createAdmin", validateNewAdmin, authMiddleware, userControll
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
+ *       403:
+ *         description: User not authorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
  *       500:
  *         description: Internal server error
  *         content:
@@ -210,7 +219,7 @@ router.post("/users/createAdmin", validateNewAdmin, authMiddleware, userControll
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.delete("/users/:userId", userController.deleteUser);
+router.delete("/users/:userId", validateDeleteUser ,authMiddleware ,userController.deleteUser);
 
 /**
  * @swagger
@@ -218,6 +227,8 @@ router.delete("/users/:userId", userController.deleteUser);
  *   patch:
  *     summary: Update a user by ID
  *     tags: [Users]
+ *     requestHeader:
+ *       required: true
  *     parameters:
  *       - in: path
  *         name: userId
@@ -243,6 +254,12 @@ router.delete("/users/:userId", userController.deleteUser);
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
+ *       403:
+ *         description: User not authorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
  *       500:
  *         description: Internal server error
  *         content:
@@ -250,6 +267,6 @@ router.delete("/users/:userId", userController.deleteUser);
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.patch("/users/:userId", validateFinishUser, userController.updateUser);
+router.patch("/users/:userId", validateFinishUser,authMiddleware ,userController.updateUser);
 
 module.exports = router;

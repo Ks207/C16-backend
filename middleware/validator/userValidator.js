@@ -30,6 +30,12 @@ exports.validateNewAdmin = [
 ]
 
 exports.validateFinishUser = [
+    header("Authorization")
+    .notEmpty()
+    .withMessage("Header es requerido!")
+    .isString()
+    .withMessage("Header tiene que ser una cadena de texto")
+    .escape(),
     body("firstname")
     .notEmpty().withMessage("Nombre no puede estar vacío")
     .isString().withMessage("Nombre tiene que ser una cadena de texto")
@@ -73,4 +79,14 @@ exports.validateFinishUser = [
     .isBoolean().withMessage("Completado tiene que ser un booleano")
     .escape(),
     validateResult,
+]
+
+exports.validateDeleteUser = [
+    header("Authorization")
+    .notEmpty()
+    .withMessage("Header es requerido!")
+    .isString()
+    .withMessage("Header tiene que ser una cadena de texto")
+    .escape(),
+    validateResult
 ]

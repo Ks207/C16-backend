@@ -164,39 +164,79 @@ exports.createAdmin = async (req, res) => {
 //DELETE /api/users/:userId
 exports.deleteUser = async (req, res) => {
   try {
+    const user = await User.findOne({
+      where: { email: res.locals.user.email },
+    });
+
+    if (user.roleId === 3) {
+      return res.status(403).json({ message: "User not authorized" });
+    }
+
+    if (user.roleId === 2) {
+      const userToDelete = await User.findOne({
+        where: { id: req.params.userId, roleId: 3 }, 
+      });
+
+      if (!userToDelete) {
+        return res.status(400).json({ message: "User not found or unauthorized to delete this user" });
+      }
+    }
+
     const numDeleted = await User.destroy({
       where: { id: req.params.userId },
     });
 
     if (numDeleted) {
-      return res.status(204).json({ message: "user deleted" });
+      return res.status(204).json({ message: "User deleted" });
     } else {
-      res
-        .status(400)
-        .json({ message: `user with id: ${req.params.id} not found.` });
+      return res.status(400).json({ message: `User with id: ${req.params.userId} not found` });
     }
   } catch (error) {
     console.error("Error deleting user:", error);
-    res.status(500).json({ error: "Internal Server Error" });
+    return res.status(500).json({ error: "Internal Server Error" });
   }
 };
 
 exports.updateUser = async (req, res) => {
   try {
-    const numUpdated = await User.update(req.body, {
+    const user = await User.findOne({
+      where: { email: res.locals.user.email },
+    });
+
+    if (user.roleId === 3) {
+      if (user.id !== req.params.userId || req.body.roleId) {
+        return res.status(403).json({ message: "Cuidador cannot update others or their own roleId" });
+      }
+    }
+
+    if (user.roleId === 2) {
+      if (req.params.userId !== user.id) {
+        if (req.body.roleId) {
+          return res.status(403).json({ message: "Admin cannot update roleId of others" });
+        }
+      } else {
+        if (req.body.roleId) {
+          return res.status(403).json({ message: "Admin cannot update their own roleId" });
+        }
+      }
+      const userToUpdate = await User.findByPk(req.params.userId);
+      if (!userToUpdate || userToUpdate.roleId !== 3 && userToUpdate.id !== user.id) {
+        return res.status(400).json({ message: "User not found or unauthorized to update this user" });
+      }
+    }
+
+    const [numUpdated] = await User.update(req.body, {
       where: { id: req.params.userId },
     });
 
     if (numUpdated) {
       const updatedUser = await User.findByPk(req.params.userId);
-      res.json(updatedUser);
+      return res.json(updatedUser);
     } else {
-      res
-        .status(400)
-        .json({ message: `user with id: ${req.params.id} not found.` });
+      return res.status(400).json({ message: `User with id: ${req.params.userId} not found` });
     }
   } catch (error) {
     console.error("Error updating user:", error);
-    res.status(500).json({ error: "Internal Server Error" });
+    return res.status(500).json({ error: "Internal Server Error" });
   }
 };
