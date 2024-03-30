@@ -67,14 +67,6 @@ router.get("/posts", postController.getAllPosts);
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Post'
- *               properties:
- *                 comments:
- *                   type: array
- *                   items:
- *                     $ref: '#/components/schemas/Comment'
- *                     properties:
- *                       user:
- *                         $ref: '#/components/schemas/User'
  *       404:
  *         description: Post not found
  *         content:

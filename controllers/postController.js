@@ -1,4 +1,4 @@
-const { Post, Comment, User } = require("../models/index");
+const { Post, User } = require("../models/index");
 const {
   getPagination,
   getPaginationData,
@@ -16,7 +16,7 @@ exports.getAllPosts = async (req, res) => {
     const { count, rows } = await Post.findAndCountAll({
       include: [
         {
-          model: User, // Join User
+          model: User,
           attributes: ["firstname", "lastname", "photo", "region", "comuna"],
           as: "user",
         },
@@ -24,11 +24,10 @@ exports.getAllPosts = async (req, res) => {
       offset,
       limit: pageSize,
       where: {
-        content: {
-          [Op.iLike]: `%${searchTerm}%`,
-        },
+        content: { [Op.iLike]: `%${searchTerm}%` },
+        parentId: null, // only fetch main posts (not replies)
       },
-      order: [["createdAt", "DESC"]], // sort by createdAt in descending order
+      order: [["createdAt", "DESC"]],
     });
     const response = getPaginationData({ count, rows }, currentPage, pageSize);
     res.json(response);
@@ -44,14 +43,38 @@ exports.getPostById = async (req, res) => {
     const post = await Post.findByPk(req.params.id, {
       include: [
         {
-          model: User, // Join User model
+          model: User,
           attributes: ["firstname", "lastname", "photo", "region", "comuna"],
           as: "user",
         },
       ],
     });
     if (post) {
-      res.json(post);
+      const { currentPage, pageSize, offset } = getPagination(
+        req.query.page,
+        req.query.limit
+      );
+      const { count, rows } = await Post.findAndCountAll({
+        where: { parentId: req.params.id },
+        include: [
+          {
+            model: User,
+            attributes: ["firstname", "lastname", "photo", "region", "comuna"],
+            as: "user",
+          },
+        ],
+        limit: pageSize,
+        offset: offset,
+      });
+      const paginationData = getPaginationData(
+        { count, rows },
+        currentPage,
+        pageSize
+      );
+      res.json({
+        data: { ...post.toJSON(), replies: paginationData.data },
+        pagination: paginationData.pagination,
+      });
     } else {
       res
         .status(404)
@@ -66,8 +89,8 @@ exports.getPostById = async (req, res) => {
 // POST /api/posts
 exports.createPost = async (req, res) => {
   try {
-    const { userId, content, image } = req.body;
-    const newPost = await Post.create({ userId, content, image });
+    const { userId, content, image, parentId } = req.body;
+    const newPost = await Post.create({ userId, content, image, parentId });
     res.status(201).json(newPost);
   } catch (error) {
     console.error("Error creating post:", error);
@@ -108,6 +131,10 @@ exports.updatePost = async (req, res) => {
 // DELETE /api/posts/:id
 exports.deletePost = async (req, res) => {
   try {
+    // Cascade delete all replies to this post
+    await Post.destroy({ where: { parentId: req.params.id } });
+
+    // Delete the main post
     const numDeleted = await Post.destroy({ where: { id: req.params.id } });
     if (numDeleted) {
       res.status(204).json({ message: "Post deleted successfully" });
