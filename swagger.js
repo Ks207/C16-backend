@@ -101,11 +101,10 @@ const options = {
             image: {
               type: "string",
             },
-            comments: {
-              type: "array",
-              items: {
-                $ref: "#/components/schemas/Comment",
-              },
+            parentId: {
+              type: "integer",
+              description: "ID of the parent post if this is a reply",
+              nullable: true,
             },
             createdAt: {
               type: "string",
@@ -131,6 +130,11 @@ const options = {
             image: {
               type: "string",
             },
+            parentId: {
+              type: "integer",
+              description: "ID of the parent post if this is a reply",
+              nullable: true,
+            },
           },
           required: ["userId", "content"],
         },
@@ -153,91 +157,6 @@ const options = {
               type: "integer",
             },
           },
-        },
-        Comment: {
-          type: "object",
-          properties: {
-            id: {
-              type: "integer",
-            },
-            content: {
-              type: "string",
-              maxLength: 2000,
-            },
-            author: {
-              type: "integer",
-            },
-            postId: {
-              type: "integer",
-            },
-            createdAt: {
-              type: "string",
-              format: "date-time",
-            },
-            updatedAt: {
-              type: "string",
-              format: "date-time",
-            },
-          },
-          required: ["content", "author", "postId"],
-        },
-        ErrorResponse: {
-          type: "object",
-          properties: {
-            message: {
-              type: "string",
-            },
-          },
-        },
-        Comment: {
-          type: "object",
-          properties: {
-            id: {
-              type: "integer",
-            },
-            userId: {
-              type: "string",
-            },
-            postId: {
-              type: "integer",
-            },
-            content: {
-              type: "string",
-              maxLength: 2000,
-            },
-            createdAt: {
-              type: "string",
-              format: "date-time",
-            },
-            updatedAt: {
-              type: "string",
-              format: "date-time",
-            },
-          },
-          required: ["userId", "postId", "content"],
-        },
-        CommentInput: {
-          type: "object",
-          properties: {
-            content: {
-              type: "string",
-              maxLength: 2000,
-            },
-            userId: {
-              type: "string",
-            },
-          },
-          required: ["content", "userId"],
-        },
-        CommentUpdateInput: {
-          type: "object",
-          properties: {
-            content: {
-              type: "string",
-              maxLength: 2000,
-            },
-          },
-          required: ["content"],
         },
         ErrorResponse: {
           type: "object",
