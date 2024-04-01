@@ -72,11 +72,7 @@ exports.createUser = async (req, res) => {
     });
 
     if (existingUser) {
-      if(!existingUser.completed) {
-        return res.status(203).json({ message: "User exist but profile needs to be completed. "})
-      } else {
-        return res.status(202).json({ message: "User profile completed. Welcome!" });
-      }
+      return res.status(200).json(existingUser);
     }
 
     const newUser = await User.create({
@@ -117,16 +113,12 @@ exports.createAdmin = async (req, res) => {
     })
 
     if(isSuperAdmin) {
-      const existingUser = await User.findOne({
+      const existingAdmin = await User.findOne({
         where: { email: req.body.email },
       })
   
-      if (existingUser) {
-        if(!existingUser.completed) {
-          return res.status(203).json({ message: "User exist but profile needs to be completed. "})
-        } else {
-          return res.status(202).json({ message: "User profile completed. Welcome!" });
-        }
+      if (existingAdmin) {
+        return res.status(200).json(existingAdmin);
       }
 
       const admin = await User.create({
@@ -150,7 +142,7 @@ exports.createAdmin = async (req, res) => {
 
       res.status(201).json(admin);
 
-    }else {
+    } else {
       return res.status(403).json({ message: "Only super admins can create admins" });
     }
 
@@ -197,6 +189,7 @@ exports.deleteUser = async (req, res) => {
   }
 };
 
+//PATCH /api/users/:userId
 exports.updateUser = async (req, res) => {
   try {
     const user = await User.findOne({

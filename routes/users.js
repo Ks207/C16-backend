@@ -112,19 +112,12 @@ router.get("/users/:userId", userController.getUserById);
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/User'
- *       203:
- *         description: User exist but profile needs to be completed
+ *       200:
+ *         description: User exist in database
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/User'
- *       202:
- *         description: User profile completed. Welcome!
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/User'
- *
+ *               $ref: '#/components/schemas/User'      
  *       500:
  *         description: Internal server error
  *         content:
@@ -156,14 +149,8 @@ router.post("/users", validateNewUser, authMiddleware, userController.createUser
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/User'
- *       203:
- *         description: User exist but profile needs to be completed
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/User'
- *       202:
- *         description: User profile completed. Welcome!
+ *       200:
+ *         description: User exist in database
  *         content:
  *           application/json:
  *             schema:
