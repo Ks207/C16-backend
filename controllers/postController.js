@@ -13,19 +13,24 @@ exports.getAllPosts = async (req, res) => {
       req.query.limit
     );
     const searchTerm = req.query.search || "";
+    const comunaFilter = req.query.comuna || "";
+
     const { count, rows } = await Post.findAndCountAll({
       include: [
         {
           model: User,
-          attributes: ["firstname", "lastname", "photo", "region", "comuna"],
           as: "user",
+          attributes: ["firstname", "lastname", "photo", "region", "comuna"],
         },
       ],
       offset,
       limit: pageSize,
       where: {
         content: { [Op.iLike]: `%${searchTerm}%` },
-        parentId: null, // only fetch main posts (not replies)
+        parentId: null,
+        ...(comunaFilter && {
+          "$user.comuna$": { [Op.iLike]: `%${comunaFilter}%` },
+        }),
       },
       order: [["createdAt", "DESC"]],
     });
