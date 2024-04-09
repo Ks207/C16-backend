@@ -52,13 +52,14 @@ exports.getMaterialsById = async (req, res) => {
 // POST /api/materials
 exports.createMaterials = async (req, res) => {
   try {
-    const { userId, title, description, materialURL, duration } = req.body;
+    const { userId, title, description, materialURL, duration, image } = req.body;
     const newMaterial = await Material.create({
       userId,
       title,
       description,
       materialURL,
       duration,
+      image
     });
     res.status(201).json(newMaterial);
   } catch (error) {
@@ -70,10 +71,16 @@ exports.createMaterials = async (req, res) => {
 // PUT /api/materials/:id
 exports.updateMaterials = async (req, res) => {
   try {
-    const { userId, title, description, materialURL, duration } = req.body;
-    const numAffectedRows = await Material.update(
-      { userId, title, description, materialURL, duration },
-      { where: { id: req.params.id } }
+    const { userId, title, description, materialURL, duration, image } = req.body;
+    const numAffectedRows = await Material.update({ 
+      userId, 
+      title, 
+      description, 
+      materialURL, 
+      duration, 
+      image 
+    },
+    { where: { id: req.params.id } }
     );
     if (numAffectedRows[0] > 0) {
       const updatedMaterial = await Material.findByPk(req.params.id);
