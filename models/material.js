@@ -28,3 +28,4 @@ const Material = sequelize.define("Material", {
 });
 
 module.exports = Material;
+
