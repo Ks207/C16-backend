@@ -73,7 +73,7 @@ router.get("/users", userController.getAllUsers);
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */ 
-router.get("/users/downloadExcel", userController.exportUsers)
+router.get("/users/downloadExcel", authMiddleware ,userController.exportUsers)
 
 /**
  * @swagger

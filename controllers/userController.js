@@ -10,6 +10,15 @@ const excelJS = require("exceljs");
 //GET /api/users/downloadExcel
 exports.exportUsers = async (req, res) => {
  
+try {
+  const user = await User.findOne({
+    where: { email: res.locals.user.email },
+});
+
+  if(user.roleId === 3){
+    return res.status(403).json({ message: "Solo administradores pueden descargar el excel" });
+  }
+
   const workbook = new excelJS.Workbook(); 
   const worksheet = workbook.addWorksheet("Mis usuarios");
 
@@ -68,6 +77,12 @@ exports.exportUsers = async (req, res) => {
     .catch((error) => {
       res.status(500).json({ error: error.message });
     })
+}
+catch (error) {
+  return res.status(500).json({ error: "Internal Server Error" });
+}
+
+  
 };
 
 //GET /api/users
