@@ -52,7 +52,8 @@ exports.getMaterialsById = async (req, res) => {
 // POST /api/materials
 exports.createMaterials = async (req, res) => {
   try {
-    const { userId, title, description, materialURL, duration, image } = req.body;
+    const userId = res.locals.user.uid
+    const { title, description, materialURL, duration, image } = req.body;
     const newMaterial = await Material.create({
       userId,
       title,
@@ -66,14 +67,13 @@ exports.createMaterials = async (req, res) => {
     console.error("Error creating a new material:", error);
     res.status(500).json({ error: "Internal server error" });
   }
-};
+}; 
 
 // PUT /api/materials/:id
 exports.updateMaterials = async (req, res) => {
   try {
-    const { userId, title, description, materialURL, duration, image } = req.body;
-    const numAffectedRows = await Material.update({ 
-      userId, 
+    const { title, description, materialURL, duration, image } = req.body;
+    const numAffectedRows = await Material.update({  
       title, 
       description, 
       materialURL, 
