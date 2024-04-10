@@ -5,8 +5,77 @@ const {
   getPaginationData,
 } = require("../utils/paginationHelper");
 const { sendEmail } = require('../config/mailerConfig');
+const excelJS = require("exceljs");
 
+//GET /api/users/downloadExcel
+exports.exportUsers = async (req, res) => {
+ 
+try {
+  const user = await User.findOne({
+    where: { email: res.locals.user.email },
+});
 
+  if(user.roleId === 3){
+    return res.status(403).json({ message: "Solo administradores pueden descargar el excel" });
+  }
+
+  const workbook = new excelJS.Workbook(); 
+  const worksheet = workbook.addWorksheet("Mis usuarios");
+
+  worksheet.columns = [ 
+    { header: "ID", key: "id", width: 30 },
+    { header: "Nombre", key: "firstname", width: 10 },
+    { header: "Apellido", key: "lastname", width: 10 },
+    { header: "Email", key: "email", width: 30 },
+    { header: "Telefono", key: "phone", width: 10 },
+    { header: "RUT", key: "rut", width: 11 },
+    { header: "Género", key: "gender", width: 10 },
+    { header: "Region", key: "region", width: 10 },
+    { header: "Comuna", key: "comuna", width: 10 },
+    { header: "Fecha de registro", key: "createdAt", width: 15 },
+  ];
+
+  const users = await User.findAll({
+    attributes:{
+      exclude: ['roleId']}
+  });
+  
+  worksheet.getRow(1).eachCell((cell) => {
+    cell.font = { bold: true };
+  });
+
+  users.forEach((user) => {
+    worksheet.addRow({
+      id: user.id,
+      firstname: user.firstname,
+      lastname: user.lastname,
+      email: user.email,
+      phone: user.phone,
+      rut: user.rut,
+      gender: user.gender,
+      region: user.region,
+      comuna: user.comuna,
+      createdAt: user.createdAt
+    });
+  });
+  
+  workbook.xlsx
+    .writeBuffer()
+    .then((buffer) => {
+      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+      res.setHeader('Content-Disposition', 'attachment; filename=users.xlsx');
+      res.send(buffer);
+    })
+    .catch((error) => {
+      res.status(500).json({ error: error.message });
+    })
+}
+catch (error) {
+  return res.status(500).json({ error: "Internal Server Error" });
+}
+
+  
+};
 
 //GET /api/users
 exports.getAllUsers = async (req, res) => {

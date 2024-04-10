@@ -187,10 +187,6 @@ const options = {
             rut: {
               type: "string",
             },
-            birthday: {
-              type: "string",
-              format: "date",
-            },
             gender: {
               type: "string",
             },
@@ -198,9 +194,6 @@ const options = {
               type: "string",
             },
             comuna: {
-              type: "string",
-            },
-            takesCare: {
               type: "string",
             },
             photo: {
@@ -253,10 +246,6 @@ const options = {
             rut: {
               type: "string",
             },
-            birthday: {
-              type: "string",
-              format: "date",
-            },
             gender: {
               type: "string",
             },
@@ -264,9 +253,6 @@ const options = {
               type: "string",
             },
             comuna: {
-              type: "string",
-            },
-            takesCare: {
               type: "string",
             },
             photo: {
