@@ -4,6 +4,7 @@ const materialController = require("../controllers/materialController");
 const {
   validateNewMaterial,
 } = require("../middleware/validator/materialValidator");
+const authMiddleware = require("../middleware/authMiddleware");
 
 /**
  * @swagger
@@ -96,6 +97,8 @@ router.get("/materials/:id", materialController.getMaterialsById);
  *   post:
  *     summary: Create a new material
  *     tags: [Materials]
+ *     requestHeader:
+ *       required: true
  *     requestBody:
  *       required: true
  *       content:
@@ -119,7 +122,8 @@ router.get("/materials/:id", materialController.getMaterialsById);
 router.post(
   "/materials",
   validateNewMaterial,
-  materialController.createMaterials
+  authMiddleware, 
+  materialController.createMaterials 
 );
 
 /**

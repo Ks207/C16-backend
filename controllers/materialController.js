@@ -52,28 +52,35 @@ exports.getMaterialsById = async (req, res) => {
 // POST /api/materials
 exports.createMaterials = async (req, res) => {
   try {
-    const { userId, title, description, materialURL, duration } = req.body;
+    const userId = res.locals.user.uid
+    const { title, description, materialURL, duration, image } = req.body;
     const newMaterial = await Material.create({
       userId,
       title,
       description,
       materialURL,
       duration,
+      image
     });
     res.status(201).json(newMaterial);
   } catch (error) {
     console.error("Error creating a new material:", error);
     res.status(500).json({ error: "Internal server error" });
   }
-};
+}; 
 
 // PUT /api/materials/:id
 exports.updateMaterials = async (req, res) => {
   try {
-    const { userId, title, description, materialURL, duration } = req.body;
-    const numAffectedRows = await Material.update(
-      { userId, title, description, materialURL, duration },
-      { where: { id: req.params.id } }
+    const { title, description, materialURL, duration, image } = req.body;
+    const numAffectedRows = await Material.update({  
+      title, 
+      description, 
+      materialURL, 
+      duration, 
+      image 
+    },
+    { where: { id: req.params.id } }
     );
     if (numAffectedRows[0] > 0) {
       const updatedMaterial = await Material.findByPk(req.params.id);
