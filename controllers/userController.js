@@ -7,7 +7,7 @@ const {
 const { sendEmail } = require('../config/mailerConfig');
 const excelJS = require("exceljs");
 
-//GET /api/users
+//GET /api/users/downloadExcel
 exports.exportUsers = async (req, res) => {
  
   const workbook = new excelJS.Workbook(); 

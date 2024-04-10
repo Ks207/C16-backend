@@ -59,6 +59,20 @@ const {
  */
 router.get("/users", userController.getAllUsers);
 
+/**
+ * @swagger
+ * /api/users/downloadExcel:
+ *   get:
+ *     summary: Download Excel with all users info
+ *     tags: [Users]
+ *     responses:
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ */ 
 router.get("/users/downloadExcel", userController.exportUsers)
 
 /**
