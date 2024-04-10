@@ -1,12 +1,13 @@
-const { body } = require("express-validator");
+const { body, header } = require("express-validator");
 const { validateResult } = require("./validateResult");
 
 exports.validateNewMaterial = [
-  body("userId")
+  header("Authorization")
     .notEmpty()
-    .withMessage("Id del usuario no puede estar vacío")
+    .withMessage("Header es requerido!")
     .isString()
-    .withMessage("Id del usuario debe ser un string"),
+    .withMessage("Header tiene que ser una cadena de texto")
+    .escape(), 
   body("title")
     .notEmpty()
     .withMessage("Título no puede estar vacío")
