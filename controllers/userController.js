@@ -5,8 +5,70 @@ const {
   getPaginationData,
 } = require("../utils/paginationHelper");
 const { sendEmail } = require('../config/mailerConfig');
+const excelJS = require("exceljs");
 
+//GET /api/users
+exports.exportUsers = async (req, res) => {
+ 
+  const workbook = new excelJS.Workbook(); 
+  const worksheet = workbook.addWorksheet("Mis usuarios");
 
+  worksheet.columns = [ 
+    { header: "ID", key: "id", width: 30 },
+    { header: "Nombre", key: "firstname", width: 10 },
+    { header: "Apellido", key: "lastname", width: 10 },
+    { header: "Email", key: "email", width: 30 },
+    { header: "Telefono", key: "phone", width: 10 },
+    { header: "RUT", key: "rut", width: 11 },
+    { header: "Fecha de nacimiento", key: "birthday", width: 15 },
+    { header: "Género", key: "gender", width: 10 },
+    { header: "Region", key: "region", width: 10 },
+    { header: "Comuna", key: "comuna", width: 10 },
+    { header: "Cuida A", key: "takesCare", width: 10 },
+    { header: "Photo", key: "photo", width: 10 },
+    { header: "Completado", key: "completed", width: 10 },
+    { header: "Fecha de creacion", key: "createdAt", width: 15 },
+  ];
+
+  const users = await User.findAll({
+    attributes:{
+      exclude: ['roleId']}
+  });
+  
+  worksheet.getRow(1).eachCell((cell) => {
+    cell.font = { bold: true };
+  });
+
+  users.forEach((user) => {
+    worksheet.addRow({
+      id: user.id,
+      firstname: user.firstname,
+      lastname: user.lastname,
+      email: user.email,
+      phone: user.phone,
+      rut: user.rut,
+      birthday: user.birthday,
+      gender: user.gender,
+      region: user.region,
+      comuna: user.comuna,
+      takesCare: user.takesCare,
+      photo: user.photo,
+      completed: user.completed,
+      createdAt: user.createdAt
+    });
+  });
+  
+  workbook.xlsx
+    .writeBuffer()
+    .then((buffer) => {
+      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+      res.setHeader('Content-Disposition', 'attachment; filename=users.xlsx');
+      res.send(buffer);
+    })
+    .catch((error) => {
+      res.status(500).json({ error: error.message });
+    })
+};
 
 //GET /api/users
 exports.getAllUsers = async (req, res) => {

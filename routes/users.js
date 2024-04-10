@@ -59,6 +59,8 @@ const {
  */
 router.get("/users", userController.getAllUsers);
 
+router.get("/users/downloadExcel", userController.exportUsers)
+
 /**
  * @swagger
  * /api/users/{userId}:
