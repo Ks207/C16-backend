@@ -33,10 +33,6 @@ const User = sequelize.define(
       allowNull: true,
       unique: true,
     },
-    birthday: {
-      type: Sequelize.DATEONLY,
-      allowNull: true,
-    },
     gender: {
       type: Sequelize.STRING,
       allowNull: true,
@@ -46,10 +42,6 @@ const User = sequelize.define(
       allowNull: true,
     },
     comuna: {
-      type: Sequelize.STRING,
-      allowNull: true,
-    },
-    takesCare: {
       type: Sequelize.STRING,
       allowNull: true,
     },

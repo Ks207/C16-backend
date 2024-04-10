@@ -29,14 +29,10 @@ try {
     { header: "Email", key: "email", width: 30 },
     { header: "Telefono", key: "phone", width: 10 },
     { header: "RUT", key: "rut", width: 11 },
-    { header: "Fecha de nacimiento", key: "birthday", width: 15 },
     { header: "Género", key: "gender", width: 10 },
     { header: "Region", key: "region", width: 10 },
     { header: "Comuna", key: "comuna", width: 10 },
-    { header: "Cuida A", key: "takesCare", width: 10 },
-    { header: "Photo", key: "photo", width: 10 },
-    { header: "Completado", key: "completed", width: 10 },
-    { header: "Fecha de creacion", key: "createdAt", width: 15 },
+    { header: "Fecha de registro", key: "createdAt", width: 15 },
   ];
 
   const users = await User.findAll({
@@ -56,13 +52,9 @@ try {
       email: user.email,
       phone: user.phone,
       rut: user.rut,
-      birthday: user.birthday,
       gender: user.gender,
       region: user.region,
       comuna: user.comuna,
-      takesCare: user.takesCare,
-      photo: user.photo,
-      completed: user.completed,
       createdAt: user.createdAt
     });
   });
