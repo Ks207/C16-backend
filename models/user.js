@@ -33,6 +33,10 @@ const User = sequelize.define(
       allowNull: true,
       unique: true,
     },
+    birthday: {
+      type: Sequelize.DATEONLY,
+      allowNull: true,
+    },
     gender: {
       type: Sequelize.STRING,
       allowNull: true,

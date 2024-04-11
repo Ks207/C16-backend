@@ -187,6 +187,10 @@ const options = {
             rut: {
               type: "string",
             },
+            birthday: {
+              type: "string",
+              format: "date",
+            },
             gender: {
               type: "string",
             },
@@ -245,6 +249,10 @@ const options = {
             },
             rut: {
               type: "string",
+            },
+            birthday: {
+              type: "string",
+              format: "date",
             },
             gender: {
               type: "string",
