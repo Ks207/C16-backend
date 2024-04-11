@@ -6,6 +6,7 @@ const {
 } = require("../utils/paginationHelper");
 const { sendEmail } = require('../config/mailerConfig');
 const excelJS = require("exceljs");
+const firebaseAdminAuth = require("../config/firebase");
 
 //GET /api/users/downloadExcel
 exports.exportUsers = async (req, res) => {
@@ -240,6 +241,22 @@ exports.deleteUser = async (req, res) => {
 
       if (!userToDelete) {
         return res.status(400).json({ message: "User not found or unauthorized to delete this user" });
+      }
+    }
+
+    const userToDelete = await User.findByPk(req.params.userId);
+    if (!userToDelete) {
+      return res.status(400).json({ message: "User not found" });
+    }
+    // Delete the user from Firebase
+    try {
+      await firebaseAdminAuth.deleteUser(userToDelete.dataValues.id);
+    } catch (error) {
+      console.error("Error deleting user from Firebase:", error);
+      if (error.code !== "auth/user-not-found") {
+        return res
+          .status(500)
+          .json({ error: "Failed to delete user from Firebase" });
       }
     }
 
