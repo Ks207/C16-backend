@@ -3,6 +3,8 @@ const router = Router();
 const materialController = require("../controllers/materialController");
 const {
   validateNewMaterial,
+  validateUpdateMaterial,
+  validateDeleteMaterial,
 } = require("../middleware/validator/materialValidator");
 const authMiddleware = require("../middleware/authMiddleware");
 
@@ -132,6 +134,8 @@ router.post(
  *   put:
  *     summary: Update a material by ID
  *     tags: [Materials]
+ *     requestHeader:
+ *       required: true
  *     parameters:
  *       - in: path
  *         name: id
@@ -164,7 +168,7 @@ router.post(
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.put("/materials/:id", materialController.updateMaterials);
+router.put("/materials/:id", validateUpdateMaterial, authMiddleware, materialController.updateMaterials);
 
 /**
  * @swagger
@@ -172,6 +176,8 @@ router.put("/materials/:id", materialController.updateMaterials);
  *   delete:
  *     summary: Delete a material by ID
  *     tags: [Materials]
+ *     requestHeader:
+ *       required: true
  *     parameters:
  *       - in: path
  *         name: id
@@ -194,6 +200,6 @@ router.put("/materials/:id", materialController.updateMaterials);
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.delete("/materials/:id", materialController.deleteMaterials);
+router.delete("/materials/:id", validateDeleteMaterial, authMiddleware, materialController.deleteMaterials);
 
 module.exports = router;
