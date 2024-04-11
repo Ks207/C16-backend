@@ -52,6 +52,9 @@ exports.validateFinishUser = [
     .notEmpty().withMessage("Rut no puede estar vacío")
     .isString().withMessage("Rut tiene que ser una cadena de texto")
     .escape(),
+    body("birthday")
+    .notEmpty().withMessage("Fecha de nacimiento no puede estar vacía")
+    .escape(),
     body("gender")
     .notEmpty().withMessage("Género no puede estar vacío")
     .isString().withMessage("Género tiene que ser una cadena de texto")
