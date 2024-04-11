@@ -1,4 +1,5 @@
 const { Material } = require("../models/index");
+const { User } = require("../models/index");
 const { Op } = require("sequelize");
 const {
   getPagination,
@@ -72,43 +73,65 @@ exports.createMaterials = async (req, res) => {
 // PUT /api/materials/:id
 exports.updateMaterials = async (req, res) => {
   try {
-    const { title, description, materialURL, duration, image } = req.body;
-    const numAffectedRows = await Material.update({  
-      title, 
-      description, 
-      materialURL, 
-      duration, 
-      image 
-    },
-    { where: { id: req.params.id } }
-    );
-    if (numAffectedRows[0] > 0) {
-      const updatedMaterial = await Material.findByPk(req.params.id);
-      res.json(updatedMaterial);
-    } else {
-      res
+    const user = await User.findOne({
+      where: { email: res.locals.user.email },
+    });
+
+    if(user.roleId === 3) {
+      return res.status(403).json({ message: "User not authorized." })
+    }
+
+    if(user.roleId === 2) {
+      const { title, description, materialURL, duration, image } = req.body;
+      const numAffectedRows = await Material.update({  
+        title, 
+        description, 
+        materialURL, 
+        duration, 
+        image 
+      },
+      { where: { id: req.params.id } }
+      );
+      if (numAffectedRows[0] > 0) {
+        const updatedMaterial = await Material.findByPk(req.params.id);
+        res.json(updatedMaterial);
+      } else {
+        res
         .status(404)
         .json({ message: `Material with id: ${req.params.id} not found` });
+      }
     }
-  } catch (error) {
+    } catch (error) {
     console.error("Error updating material:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 };
 
+
 // DELETE /api/materials/:id
 exports.deleteMaterials = async (req, res) => {
   try {
-    const numDeleted = await Material.destroy({ where: { id: req.params.id } });
-    if (numDeleted) {
-      res.status(204).json({ message: "Material deleted successfully" });
-    } else {
-      res
-        .status(404)
-        .json({ message: `Material with id=${req.params.id} not found` });
+    const user = await User.findOne({
+      where: { email: res.locals.user.email },
+    });
+
+    if(user.roleId === 3) {
+      return res.status(403).json({ message: "User not authorized." })
+    }
+
+    if(user.roleId === 2) {
+      const numDeleted = await Material.destroy({ where: { id: req.params.id } });
+      if (numDeleted) {
+        res.status(204).json({ message: "Material deleted successfully" });
+      } else {
+        res
+          .status(404)
+          .json({ message: `Material with id=${req.params.id} not found` });
+      }
     }
   } catch (error) {
     console.error("Error deleting Material:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 };
+
