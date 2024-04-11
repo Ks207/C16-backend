@@ -234,6 +234,16 @@ exports.deleteUser = async (req, res) => {
       return res.status(403).json({ message: "User not authorized" });
     }
 
+    if (user.roleId === 2) {
+      const userToDelete = await User.findOne({
+        where: { id: req.params.userId, roleId: 3 }, 
+      });
+
+      if (!userToDelete) {
+        return res.status(400).json({ message: "User not found or unauthorized to delete this user" });
+      }
+    }
+
     const userToDelete = await User.findByPk(req.params.userId);
     if (!userToDelete) {
       return res.status(400).json({ message: "User not found" });
