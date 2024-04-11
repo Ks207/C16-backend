@@ -30,3 +30,23 @@ exports.validateNewMaterial = [
     .withMessage("Duración debe ser un numero"),
   validateResult,
 ];
+
+exports.validateUpdateMaterial = [
+  header("Authorization")
+    .notEmpty()
+    .withMessage("Header es requerido!")
+    .isString()
+    .withMessage("Header tiene que ser una cadena de texto")
+    .escape(),
+    validateResult
+];
+
+exports.validateDeleteMaterial = [
+  header("Authorization")
+    .notEmpty()
+    .withMessage("Header es requerido!")
+    .isString()
+    .withMessage("Header tiene que ser una cadena de texto")
+    .escape(),
+    validateResult
+]
