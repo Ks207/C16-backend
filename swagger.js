@@ -19,18 +19,18 @@ const options = {
             userId: {
               type: "string",
             },
-            title: {
+            description: {
               type: "string",
             },
-            content: {
-              type: "string",
-              maxLength: 2000,
-            },
-            image: {
+            comuna: {
               type: "string",
             },
-            type: {
+            url: {
               type: "string",
+            },
+            highlighted: {
+              type: "boolean",
+              default: false,
             },
             createdAt: {
               type: "string",
@@ -41,7 +41,7 @@ const options = {
               format: "date-time",
             },
           },
-          required: ["userId", "title", "content"],
+          required: ["userId", "description", "comuna"],
         },
         ResourceInput: {
           type: "object",
@@ -49,21 +49,21 @@ const options = {
             userId: {
               type: "string",
             },
-            title: {
+            description: {
               type: "string",
             },
-            content: {
-              type: "string",
-              maxLength: 2000,
-            },
-            image: {
+            comuna: {
               type: "string",
             },
-            type: {
+            url: {
               type: "string",
+            },
+            highlighted: {
+              type: "boolean",
+              default: false,
             },
           },
-          required: ["userId", "title", "content"],
+          required: ["userId", "description", "comuna"],
         },
         ResourcesResponse: {
           type: "object",
@@ -376,7 +376,6 @@ const options = {
             },
           },
         },
-
         Role: {
           type: "object",
           properties: {
@@ -409,7 +408,7 @@ const options = {
             },
           },
         },
-        ErrorResponse: {
+         ErrorResponse: {
           type: "object",
           properties: {
             message: {

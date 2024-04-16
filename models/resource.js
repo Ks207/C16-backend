@@ -7,21 +7,22 @@ const Resource = sequelize.define(
       type: Sequelize.STRING,
       allowNull: false,
     },
-    title: {
+    description: {
       type: Sequelize.STRING,
       allowNull: false,
     },
-    content: {
-      type: Sequelize.STRING(2000),
+    comuna: {
+      type: Sequelize.STRING,
       allowNull: false,
     },
-    image: {
+    url: {
       type: Sequelize.STRING,
       allowNull: true,
     },
-    type: {
-      type: Sequelize.STRING,
-      allowNull: true,
+    highlighted: {
+      type: Sequelize.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
     },
   },
   {

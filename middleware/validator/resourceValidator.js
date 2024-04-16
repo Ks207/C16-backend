@@ -2,15 +2,15 @@ const { body } = require("express-validator");
 const { validateResult } = require("./validateResult");
 
 exports.validateNewResource = [
-  body("title")
+  body("description")
     .notEmpty()
-    .withMessage("Título no puede estar vacío")
+    .withMessage("Descripción no puede estar vacía")
     .isString()
-    .withMessage("Título debe ser un string"),
-  body("content")
+    .withMessage("Descripción debe ser un string"),
+  body("comuna")
     .notEmpty()
-    .withMessage("Contenido no puede estar vacío")
+    .withMessage("Comuna no puede estar vacía")
     .isString()
-    .withMessage("Contenido debe ser un string"),
+    .withMessage("Comuna debe ser un string"),
   validateResult,
 ];
