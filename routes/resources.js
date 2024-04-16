@@ -20,10 +20,10 @@ const {
  *     tags: [Resources]
  *     parameters:
  *       - in: query
- *         name: type
+ *         name: comuna
  *         schema:
  *           type: string
- *         description: Filter resources by type
+ *         description: Filter resources by comuna
  *       - in: query
  *         name: page
  *         schema:
@@ -42,7 +42,7 @@ const {
  *             schema:
  *               $ref: '#/components/schemas/ResourcesResponse'
  *       404:
- *         description: No resources found with the specified type
+ *         description: No resources found with the specified filters
  *         content:
  *           application/json:
  *             schema:
@@ -165,7 +165,7 @@ router.put("/resources/:id", resourceController.updateResource);
 
 /**
  * @swagger
- * /api/resources/{id}:
+* /api/resources/{id}:
  *   delete:
  *     summary: Delete a resource by ID
  *     tags: [Resources]

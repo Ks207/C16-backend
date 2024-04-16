@@ -3,29 +3,29 @@ const {
   getPagination,
   getPaginationData,
 } = require("../utils/paginationHelper");
+const { Op } = require("sequelize");
 
 // GET /api/resources
 exports.getAllResources = async (req, res) => {
   try {
-    let whereClause = {};
-    if (req.query.type) {
-      whereClause.type = req.query.type;
-    }
     const { currentPage, pageSize, offset } = getPagination(
       req.query.page,
       req.query.limit
     );
+    const comunaFilter = req.query.comuna || "";
+
     const { count, rows } = await Resource.findAndCountAll({
-      where: whereClause,
+      where: {
+        ...(comunaFilter && { comuna: { [Op.iLike]: `%${comunaFilter}%` } }),
+      },
       offset,
       limit: pageSize,
+      order: [
+        ['highlighted', 'DESC'],
+        ['createdAt', 'DESC']
+      ]
     });
     const response = getPaginationData({ count, rows }, currentPage, pageSize);
-    if (count === 0 && req.query.type) {
-      return res
-        .status(404)
-        .json({ message: `No resources with type=${req.query.type} found` });
-    }
     res.json(response);
   } catch (error) {
     console.error("Error retrieving resources:", error);
@@ -53,14 +53,13 @@ exports.getResourceById = async (req, res) => {
 // POST /api/resources
 exports.createResource = async (req, res) => {
   try {
-    const { userId, title, content, image, type } = req.body;
-    // Create a new resource instance
+    const { userId, description, comuna, url, highlighted } = req.body;
     const newResource = await Resource.create({
       userId,
-      title,
-      content,
-      image,
-      type,
+      description,
+      comuna,
+      url,
+      highlighted,
     });
     res.status(201).json(newResource);
   } catch (error) {
@@ -72,10 +71,9 @@ exports.createResource = async (req, res) => {
 // PUT /api/resources/:id
 exports.updateResource = async (req, res) => {
   try {
-    const { userId, title, content, image, type } = req.body;
-    // Update the resource with the new values
+    const { userId, description, comuna, url, highlighted } = req.body;
     const numAffectedRows = await Resource.update(
-      { userId, title, content, image, type },
+      { userId, description, comuna, url, highlighted },
       { where: { id: req.params.id } }
     );
     if (numAffectedRows[0] > 0) {
