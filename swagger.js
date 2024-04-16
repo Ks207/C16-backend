@@ -433,6 +433,80 @@ const options = {
             },
           },
         },
+        Partner: {
+          type: "object",
+          properties: {
+            id: {
+              type: "integer",
+            },
+            userId: {
+              type: "string",
+            },
+            name: {
+              type: "string",
+            },
+            description: {
+              type: "string",
+              maxLength: 2000,
+            },
+            image: {
+              type: "string",
+            },
+            url: {
+              type: "string",
+            },
+            createdAt: {
+              type: "string",
+              format: "date-time",
+            },
+            updatedAt: {
+              type: "string",
+              format: "date-time",
+            },
+          },
+          required: ["userId", "name", "description", "image", "url"],
+        },
+        partnerInput: {
+          type: "object",
+          properties: {
+            userId: {
+              type: "string",
+            },
+            name: {
+              type: "string",
+            },
+            description: {
+              type: "string",
+              maxLength: 2000,
+            },
+            image: {
+              type: "string",
+            },
+            url: {
+              type: "string",
+            },
+          },
+          required: ["userId", "name", "description", "image", "url"],
+        },
+        partnerResponse: {
+          type: "object",
+          properties: {
+            data: {
+              type: "array",
+              items: {
+                $ref: "#/components/schemas/Partner",
+              },
+            },
+          },
+        },
+        ErrorResponse: {
+          type: "object",
+          properties: {
+            message: {
+              type: "string",
+            },
+          },
+        },
       }, //  ---
     },
   },
