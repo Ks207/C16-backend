@@ -4,6 +4,7 @@ const User = require("./user");
 const Post = require("./post");
 const Resource = require("./resource");
 const Material = require("./material");
+const Partner = require("./partner");
 
 // relationships
 User.belongsTo(Role, { foreignKey: "roleId" });
@@ -16,10 +17,13 @@ Resource.belongsTo(User, { foreignKey: "userId" });
 
 Material.belongsTo(User, { foreignKey: "userId" });
 
+Partner.belongsTo(User, { foreignKey: "userId" });
+
 module.exports = {
   Role,
   User,
   Post,
   Resource,
   Material,
+  Partner,
 };
