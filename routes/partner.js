@@ -158,12 +158,12 @@ router.post("/partners", validateNewPartner, authMiddleware, partnerController.c
 router.put("/partners/:partnerId", validateUpdatePartner, authMiddleware, partnerController.updatePartner);
 
 /**
- * @swaagger
+ * @swagger
  * /api/partners/{partnerId}:
  *   delete:
  *     summary: Delete a partner by its ID
  *     tags: [Partners]
- *     resquestHeader:
+ *     requestHeader:
  *       require: true
  *     parameters:
  *       - in: path
