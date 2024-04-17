@@ -1,60 +1,54 @@
 const express = require("express");
 const router = express.Router();
-const postController = require("../controllers/postController");
-const { validateNewPost } = require("../middleware/validator/postValidator");
+const reportController = require("../controllers/reportController");
 const authMiddleware = require("../middleware/authMiddleware");
+const {validateNewReport, validateUpdateReport} = require("../middleware/validator/reportValidator");
+
+
 
 /**
  * @swagger
  * tags:
- *   - name: Posts
- *     description: Operations related to posts
+ *   - name: Reports
+ *     description: Operations related to reports
  */
+
 
 /**
  * @swagger
- * /api/posts:
+ * /api/reports:
  *   get:
- *     summary: Get all posts
- *     tags: [Posts]
- *     parameters:
- *       - in: query
- *         name: search
- *         schema:
- *           type: string
- *         description: Search term to filter posts
- *       - in: query
- *         name: page
- *         schema:
- *           type: integer
- *         description: Page number for pagination
- *       - in: query
- *         name: limit
- *         schema:
- *           type: integer
- *         description: Number of items per page for pagination
+ *     summary: Get all reports
+ *     tags: [Reports]
  *     responses:
  *       200:
  *         description: Successful response
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/PostsResponse'
+ *               $ref: '#/components/schemas/Report'
+ *       404:
+ *         description: Reports not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
  *       500:
  *         description: Internal server error
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
- */
-router.get("/posts", postController.getAllPosts);
+ */ 
+router.get("/reports", reportController.getAllReports);
+
 
 /**
  * @swagger
- * /api/posts/{id}:
+ * /api/reports/{id}:
  *   get:
- *     summary: Get a post by ID
- *     tags: [Posts]
+ *     summary: Get a report by ID
+ *     tags: [Reports]
  *     parameters:
  *       - in: path
  *         name: id
@@ -67,41 +61,44 @@ router.get("/posts", postController.getAllPosts);
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Post'
- *       404:
- *         description: Post not found
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ErrorResponse'
+ *               $ref: '#/components/schemas/Report'
  *       500:
  *         description: Internal server error
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
+ *       404:
+ *         description: Report not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.get("/posts/:id", postController.getPostById);
+router.get("/reports/:id", reportController.getReportById);
+
 
 /**
  * @swagger
- * /api/posts:
+ * /api/reports:
  *   post:
- *     summary: Create a new post
- *     tags: [Posts]
+ *     summary: Create a new report
+ *     tags: [Reports]
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/PostInput'
+ *             $ref: '#/components/schemas/ReportInput'
  *     responses:
  *       201:
- *         description: Post created successfully
+ *         description: Existing report has been updated
+ *       200:
+ *         description: Report created successfully
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Post'
+ *               $ref: '#/components/schemas/Report'
  *       500:
  *         description: Internal server error
  *         content:
@@ -109,14 +106,15 @@ router.get("/posts/:id", postController.getPostById);
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.post("/posts", authMiddleware, validateNewPost, postController.createPost);
+router.post("/reports", validateNewReport, authMiddleware, reportController.createReport);
+
 
 /**
  * @swagger
- * /api/posts/{id}:
+ * /api/reports/{id}:
  *   put:
- *     summary: Update a post by ID
- *     tags: [Posts]
+ *     summary: Update an existing report
+ *     tags: [Reports]
  *     parameters:
  *       - in: path
  *         name: id
@@ -128,16 +126,12 @@ router.post("/posts", authMiddleware, validateNewPost, postController.createPost
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/PostInput'
+ *             $ref: '#/components/schemas/ReportUpdateInput'
  *     responses:
  *       200:
- *         description: Post updated successfully
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Post'
- *       404:
- *         description: Post not found
+ *         description: Report updated successfully
+ *       403:
+ *         description: Forbidden
  *         content:
  *           application/json:
  *             schema:
@@ -149,14 +143,15 @@ router.post("/posts", authMiddleware, validateNewPost, postController.createPost
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.put("/posts/:id", postController.updatePost);
+router.put("/reports/:id",  validateUpdateReport, authMiddleware ,reportController.updateReport);
+
 
 /**
  * @swagger
- * /api/posts/{id}:
+ * /api/reports/{id}:
  *   delete:
- *     summary: Delete a post by ID
- *     tags: [Posts]
+ *     summary: Delete an existing report
+ *     tags: [Reports]
  *     parameters:
  *       - in: path
  *         name: id
@@ -164,10 +159,10 @@ router.put("/posts/:id", postController.updatePost);
  *         schema:
  *           type: integer
  *     responses:
- *       204:
- *         description: Post deleted successfully
- *       404:
- *         description: Post not found
+ *       200:
+ *         description: Report deleted successfully
+ *       403:
+ *         description: Forbidden
  *         content:
  *           application/json:
  *             schema:
@@ -179,6 +174,7 @@ router.put("/posts/:id", postController.updatePost);
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.delete("/posts/:id", postController.deletePost);
+router.delete("/reports/:id", reportController.deleteReport);
+
 
 module.exports = router;
