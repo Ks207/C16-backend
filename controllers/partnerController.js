@@ -1,15 +1,31 @@
 const { Partner } = require("../models/index");
 const { User } = require("../models/index");
+const { Op } = require('sequelize');
+const { 
+  getPagination, 
+  getPaginationData 
+} = require("../utils/paginationHelper");
 
 
 //GET /api/partners 
 exports.getAllPartners = async (req, res) => {
+  const { page, size, name } = req.query;
+  const condition = name ? { name: {[Op.iLike]: `%${name}%` }} : null;
+  const { currentPage, pageSize, offset } = getPagination(page, size);
   try {
-    const  partners = await Partner.findAll();
-    if(!partners) {
-      return res.status(400).json({ msg: "No partners found" });
+    const { count, rows } = await Partner.findAndCountAll({
+      where: condition,
+      offset,
+      limit: pageSize
+    });
+    
+    const response = getPaginationData({ count, rows }, currentPage, pageSize);
+    if(response.data.length === 0 && name){
+      return res
+        .status(404)
+        .json({ message: `No partners found with name= "${name}"`});
     }
-    res.json(partners);
+    res.json(response);
   } catch (error) {
     console.error("Error retrieving partners: ", error);
     res.status(500).json({ message: "Internal server error" })
