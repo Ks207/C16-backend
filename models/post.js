@@ -19,6 +19,11 @@ const Post = sequelize.define(
       type: Sequelize.INTEGER,
       allowNull: true,
     },
+    active: {
+      type: Sequelize.BOOLEAN,
+      allowNull: false,
+      defaultValue: true,
+    }
   },
   {
     timestamps: true,

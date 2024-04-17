@@ -507,6 +507,59 @@ const options = {
             },
           },
         },
+        Report: {
+          type: "object",
+          properties: {
+            id: {
+              type: "integer",
+            },
+            userId: {
+              type: "string",
+            },
+            author: {
+              type: "string",
+            },
+            content: {
+              type: "string",
+            },
+            quantity: {
+              type: "integer",
+            },
+            active: {
+              type: "boolean",
+            },
+            createdAt: {
+              type: "string",
+              format: "date",
+            },
+            updatedAt: {
+              type: "string",
+              format: "date",
+            }
+          },
+        },
+        ReportInput: {
+          type: "object",
+          properties: {
+            userId: {
+              type: "string",
+            },
+            author: {
+              type: "string",
+            },
+            content: {
+              type: "string",
+            },
+          },
+        },
+       ReportUpdateInput: {
+         type: "object",
+         properties: {
+           active: {
+             type: "boolean",
+           }
+         },
+       }
       }, //  ---
     },
   },

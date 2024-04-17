@@ -27,6 +27,7 @@ exports.getAllPosts = async (req, res) => {
       limit: pageSize,
       where: {
         content: { [Op.iLike]: `%${searchTerm}%` },
+        active: true,
         parentId: null,
         ...(comunaFilter && {
           "$user.comuna$": { [Op.iLike]: `%${comunaFilter}%` },
@@ -94,8 +95,13 @@ exports.getPostById = async (req, res) => {
 // POST /api/posts
 exports.createPost = async (req, res) => {
   try {
-    const { userId, content, image, parentId } = req.body;
-    const newPost = await Post.create({ userId, content, image, parentId });
+
+    const user = await User.findOne({
+      where: { email: res.locals.user.email },
+    })
+
+    const { content, image, parentId } = req.body;
+    const newPost = await Post.create({ userId: user.id, content, image, parentId });
     res.status(201).json(newPost);
   } catch (error) {
     console.error("Error creating post:", error);
