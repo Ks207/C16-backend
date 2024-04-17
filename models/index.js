@@ -18,6 +18,9 @@ Resource.belongsTo(User, { foreignKey: "userId" });
 
 Material.belongsTo(User, { foreignKey: "userId" });
 
+Report.belongsTo(User, { foreignKey: "userId", as: "ReportAuthor" });
+Report.belongsTo(User, { foreignKey: "author", as: "PostAuthor" });
+
 Partner.belongsTo(User, { foreignKey: "userId" });
 
 module.exports = {
