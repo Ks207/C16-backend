@@ -19,18 +19,18 @@ const options = {
             userId: {
               type: "string",
             },
-            title: {
+            description: {
               type: "string",
             },
-            content: {
-              type: "string",
-              maxLength: 2000,
-            },
-            image: {
+            comuna: {
               type: "string",
             },
-            type: {
+            url: {
               type: "string",
+            },
+            highlighted: {
+              type: "boolean",
+              default: false,
             },
             createdAt: {
               type: "string",
@@ -41,7 +41,7 @@ const options = {
               format: "date-time",
             },
           },
-          required: ["userId", "title", "content"],
+          required: ["userId", "description", "comuna"],
         },
         ResourceInput: {
           type: "object",
@@ -49,21 +49,21 @@ const options = {
             userId: {
               type: "string",
             },
-            title: {
+            description: {
               type: "string",
             },
-            content: {
-              type: "string",
-              maxLength: 2000,
-            },
-            image: {
+            comuna: {
               type: "string",
             },
-            type: {
+            url: {
               type: "string",
+            },
+            highlighted: {
+              type: "boolean",
+              default: false,
             },
           },
-          required: ["userId", "title", "content"],
+          required: ["userId", "description", "comuna"],
         },
         ResourcesResponse: {
           type: "object",
@@ -408,7 +408,7 @@ const options = {
             },
           },
         },
-        ErrorResponse: {
+         ErrorResponse: {
           type: "object",
           properties: {
             message: {
@@ -426,6 +426,80 @@ const options = {
           required: ["email"],
         },
         MailResponse: {
+          type: "object",
+          properties: {
+            message: {
+              type: "string",
+            },
+          },
+        },
+        Partner: {
+          type: "object",
+          properties: {
+            id: {
+              type: "integer",
+            },
+            userId: {
+              type: "string",
+            },
+            name: {
+              type: "string",
+            },
+            description: {
+              type: "string",
+              maxLength: 2000,
+            },
+            image: {
+              type: "string",
+            },
+            url: {
+              type: "string",
+            },
+            createdAt: {
+              type: "string",
+              format: "date-time",
+            },
+            updatedAt: {
+              type: "string",
+              format: "date-time",
+            },
+          },
+          required: ["userId", "name", "description", "image", "url"],
+        },
+        partnerInput: {
+          type: "object",
+          properties: {
+            userId: {
+              type: "string",
+            },
+            name: {
+              type: "string",
+            },
+            description: {
+              type: "string",
+              maxLength: 2000,
+            },
+            image: {
+              type: "string",
+            },
+            url: {
+              type: "string",
+            },
+          },
+          required: ["userId", "name", "description", "image", "url"],
+        },
+        partnerResponse: {
+          type: "object",
+          properties: {
+            data: {
+              type: "array",
+              items: {
+                $ref: "#/components/schemas/Partner",
+              },
+            },
+          },
+        },
+        ErrorResponse: {
           type: "object",
           properties: {
             message: {
