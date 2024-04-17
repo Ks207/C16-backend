@@ -1,10 +1,19 @@
 const { Report, User, Post } = require("../models/index");
-
+const {
+    getPagination,
+    getPaginationData,
+  } = require("../utils/paginationHelper");
 
 
 exports.getAllReports = async (req, res) => {
     try{
-     const reports = await Report.findAll({
+        const { currentPage, pageSize, offset } = getPagination(
+            req.query.page,
+            req.query.limit
+          );
+          const active = req.query.active || null;
+
+     const { count, rows } = await Report.findAndCountAll({
          attributes: ['id', 'userId', 'author', 'content', 'quantity', 'active' ,'createdAt', 'updatedAt'],
          include: [
              {
@@ -18,11 +27,20 @@ exports.getAllReports = async (req, res) => {
                  as: 'ReportAuthor',
              }
          ],
+         offset,
+         limit: pageSize,
          order: [['quantity', 'DESC']],
+         where: {
+             active: active
+         }
      });
-     if(!reports || reports.length === 0){
+
+     if(!count){
          return res.status(404).json({ message: "No reports found" });
      }
+
+     const reports = getPaginationData({ count, rows }, currentPage, pageSize);
+     
      res.status(200).json(reports);
     } catch (error) {
      console.error("Error retrieving reports:", error);

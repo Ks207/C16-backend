@@ -20,6 +20,22 @@ const {validateNewReport, validateUpdateReport} = require("../middleware/validat
  *   get:
  *     summary: Get all reports
  *     tags: [Reports]
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *         description: Page number for pagination
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *         description: Number of items per page for pagination
+ *       - in: query
+ *         name: active
+ *         schema:
+ *           type: boolean
+ *         description: Filter reports by active status
  *     responses:
  *       200:
  *         description: Successful response
