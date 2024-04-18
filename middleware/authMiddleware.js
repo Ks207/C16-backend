@@ -1,4 +1,4 @@
-const auth = require("../config/firebase");
+const { auth } = require("../config/firebase");
 
 const validateFirebaseToken = async (req, res, next) => {
   
