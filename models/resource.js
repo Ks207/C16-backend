@@ -24,6 +24,10 @@ const Resource = sequelize.define(
       allowNull: false,
       defaultValue: false,
     },
+    image:{
+      type: Sequelize.STRING,
+      allowNull: false
+    }
   },
   {
     timestamps: true,

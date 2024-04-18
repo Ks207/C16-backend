@@ -1,9 +1,11 @@
 const express = require("express");
 const router = express.Router();
 const resourceController = require("../controllers/resourceController");
+const upload = require("../middleware/multerMiddleware");
 const {
   validateNewResource,
 } = require("../middleware/validator/resourceValidator");
+const authMiddleware = require("../middleware/authMiddleware");
 
 /**
  * @swagger
@@ -119,7 +121,9 @@ router.get("/resources/:id", resourceController.getResourceById);
 
 router.post(
   "/resources",
+  upload.single("image"),
   validateNewResource,
+  authMiddleware,
   resourceController.createResource
 );
 
@@ -161,7 +165,7 @@ router.post(
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.put("/resources/:id", resourceController.updateResource);
+router.put("/resources/:id", upload.single("image"), authMiddleware, resourceController.updateResource);
 
 /**
  * @swagger
@@ -191,6 +195,6 @@ router.put("/resources/:id", resourceController.updateResource);
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.delete("/resources/:id", resourceController.deleteResource);
+router.delete("/resources/:id", authMiddleware, resourceController.deleteResource);
 
 module.exports = router;
