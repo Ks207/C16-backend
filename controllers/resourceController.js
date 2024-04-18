@@ -1,9 +1,11 @@
 const { Resource } = require("../models/index");
+const { User } = require("../models/index");
 const {
   getPagination,
   getPaginationData,
 } = require("../utils/paginationHelper");
 const { Op } = require("sequelize");
+const { uploadImage, deleteImage } = require('../utils/imageHelper');
 
 // GET /api/resources
 exports.getAllResources = async (req, res) => {
@@ -53,12 +55,18 @@ exports.getResourceById = async (req, res) => {
 // POST /api/resources
 exports.createResource = async (req, res) => {
   try {
-    const { userId, description, comuna, url, highlighted } = req.body;
+    const userId = res.locals.user.uid;
+    const { description, comuna, url, highlighted } = req.body;
+    let imageUrl = '';
+    if (req.file) {
+      imageUrl = await uploadImage(req.file.buffer, req.file.originalname, userId);
+    }
     const newResource = await Resource.create({
       userId,
       description,
       comuna,
       url,
+      image: imageUrl,
       highlighted,
     });
     res.status(201).json(newResource);
@@ -71,18 +79,40 @@ exports.createResource = async (req, res) => {
 // PUT /api/resources/:id
 exports.updateResource = async (req, res) => {
   try {
-    const { userId, description, comuna, url, highlighted } = req.body;
+    const user = await User.findOne({
+      where: { email: res.locals.user.email },
+    });
+
+    if (user.roleId === 3) {
+      return res.status(403).json({ message: "User not authorized." });
+    }
+
+    const userId = res.locals.user.uid;
+    const { description, comuna, url, highlighted } = req.body;
+    let imageUrl = req.body.image;
+
+    if (req.file) {
+      const resourceToUpdate = await Resource.findByPk(req.params.id);
+      if (resourceToUpdate) {
+        try {
+          await deleteImage(resourceToUpdate.image);
+        } catch (error) {
+          console.log("Failed to delete image");
+        }
+        imageUrl = await uploadImage(req.file.buffer, req.file.originalname, userId);
+      }
+    }
+
     const numAffectedRows = await Resource.update(
-      { userId, description, comuna, url, highlighted },
+      { description, comuna, image: imageUrl, url, highlighted },
       { where: { id: req.params.id } }
     );
+
     if (numAffectedRows[0] > 0) {
       const updatedResource = await Resource.findByPk(req.params.id);
       res.json(updatedResource);
     } else {
-      res
-        .status(404)
-        .json({ message: `Resource with id=${req.params.id} not found` });
+      res.status(404).json({ message: `Resource with id=${req.params.id} not found` });
     }
   } catch (error) {
     console.error("Error updating resource:", error);
@@ -93,13 +123,32 @@ exports.updateResource = async (req, res) => {
 // DELETE /api/resources/:id
 exports.deleteResource = async (req, res) => {
   try {
+    const user = await User.findOne({
+      where: { email: res.locals.user.email },
+    });
+
+    if(user.roleId === 3) {
+      return res.status(403).json({ message: "User not authorized." });
+    }
+
+    const resource = await Resource.findByPk(req.params.id);
+    if (!resource) {
+      return res.status(404).json({ message: `Resource with id=${req.params.id} not found` });
+    }
+
+    if (resource.image) {
+      try {
+        await deleteImage(resource.image);
+      } catch (error) {
+        console.log("Failed to delete image");
+      }
+    }
+
     const numDeleted = await Resource.destroy({ where: { id: req.params.id } });
     if (numDeleted) {
       res.status(204).json({ message: "Resource deleted successfully" });
     } else {
-      res
-        .status(404)
-        .json({ message: `Resource with id=${req.params.id} not found` });
+      res.status(404).json({ message: `Resource with id=${req.params.id} not found` });
     }
   } catch (error) {
     console.error("Error deleting resource:", error);
