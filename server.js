@@ -10,6 +10,7 @@ const postsRouter = require("./routes/posts");
 const materialsRouter = require("./routes/materials");
 const userRouter = require("./routes/users");
 const roleRouter = require("./routes/roles");
+const reportRouter = require("./routes/reports");
 const partnerRouter = require("./routes/partner");
 const { sequelize } = require("./config/database");
 
@@ -27,6 +28,7 @@ app.use("/api", postsRouter);
 app.use("/api", materialsRouter);
 app.use("/api", userRouter);
 app.use("/api", roleRouter);
+app.use("/api", reportRouter);
 app.use("/api", partnerRouter);
 
 app.get("/", (req, res) => {
@@ -38,6 +40,7 @@ app.get("/", (req, res) => {
     materials: baseUrl + "/api/materials",
     users: baseUrl + "/api/users",
     roles: baseUrl + "/api/roles",
+    reports: baseUrl + "/api/reports",
     partners: baseUrl + "/api/partners",
   });
 });
