@@ -67,10 +67,6 @@ exports.validateFinishUser = [
     .notEmpty().withMessage("Comuna no puede estar vacía")
     .isString().withMessage("Comuna tiene que ser una cadena de texto")
     .escape(),
-    body("photo")
-    .notEmpty().withMessage("Foto no puede estar vacía")
-    .isString().withMessage("Foto tiene que ser una cadena de texto")
-    .escape(),
     body("completed")
     .isBoolean().withMessage("Completado tiene que ser un booleano")
     .escape(),
