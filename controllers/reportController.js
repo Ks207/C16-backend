@@ -72,15 +72,20 @@ exports.createReport = async (req, res) => {
           where: { email: res.locals.user.email },
       });
 
-        const { postId, author, content, quantity } = req.body;
+        const { postId } = req.body;
         const existingReport = await Report.findOne({ where: { postId: postId } });
-       
+
         if (existingReport) {
             const newQuantity = existingReport.quantity + 1;
             await Report.update({ quantity: newQuantity }, { where: { id: existingReport.id } });
             return res.status(201).json({ message: "Se le sumo uno al reporte!"});
         }
-        const newReport = await Report.create({ userId: user.id, postId, author, content, quantity });
+
+        const post = await Post.findOne({ where: { id: postId } });
+        const author = post.userId;
+        const content = post.content;
+
+        const newReport = await Report.create({ userId: user.id, postId, author , content});
 
         res.status(200).json(newReport);
     } catch (error) {

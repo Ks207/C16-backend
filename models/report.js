@@ -26,7 +26,7 @@ const Report = sequelize.define(
     },
     active: {
       type: Sequelize.BOOLEAN,
-      allowNull: false,
+      allowNull: true,
       defaultValue: null,
     },
   },
