@@ -73,6 +73,12 @@ exports.createReport = async (req, res) => {
       });
 
         const { postId } = req.body;
+
+        const existingCopyReport = await Report.findOne({ where: { postId: postId, userId: user.id } });
+        if (existingCopyReport) {
+            return res.status(409).json({ message: "You have already reported this post" });
+        }
+
         const existingReport = await Report.findOne({ where: { postId: postId } });
 
         if (existingReport) {
