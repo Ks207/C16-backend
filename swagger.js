@@ -541,13 +541,7 @@ const options = {
         ReportInput: {
           type: "object",
           properties: {
-            userId: {
-              type: "string",
-            },
-            author: {
-              type: "string",
-            },
-            content: {
+            postId: {
               type: "string",
             },
           },

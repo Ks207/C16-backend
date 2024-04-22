@@ -14,16 +14,6 @@ exports.validateNewReport = [
     .withMessage("Post ID no puede estar vacío")
     .isString()
     .withMessage("Post ID debe ser un string"),
-  body("author")
-    .notEmpty()
-    .withMessage("Autor no puede estar vacío")
-    .isString()
-    .withMessage("Autor debe ser un string"),
-  body("content")
-    .notEmpty()
-    .withMessage("Contenido no puede estar vacío")
-    .isString()
-    .withMessage("Contenido debe ser un string"),
   validateResult,
 ]
 
