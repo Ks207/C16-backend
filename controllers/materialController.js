@@ -5,6 +5,7 @@ const {
   getPagination,
   getPaginationData,
 } = require("../utils/paginationHelper");
+const { getId } = require("../utils/youtubeHelper");
 
 // GET /api/materials
 // /api/materials //return default size 4 materials
@@ -19,6 +20,7 @@ exports.getAllMaterials = async (req, res) => {
       where: condition,
       offset,
       limit: pageSize,
+      order: [["createdAt", "DESC"]],
     });
     const response = getPaginationData({ count, rows }, currentPage, pageSize);
     if (response.data.length === 0 && title) {
@@ -53,22 +55,31 @@ exports.getMaterialsById = async (req, res) => {
 // POST /api/materials
 exports.createMaterials = async (req, res) => {
   try {
-    const userId = res.locals.user.uid
-    const { title, description, materialURL, duration, image } = req.body;
+    const userId = res.locals.user.uid;
+    const { title, description, materialURL, duration } = req.body;
+
+    const myId = getId(materialURL);
+    if (myId === "error") {
+      return res.status(400).json({ error: "Invalid YouTube URL" });
+    }
+
+    const embedUrl = `https://www.youtube.com/embed/${myId}?autoplay=1`;
+    const imageUrl = `https://img.youtube.com/vi/${myId}/0.jpg`;
+
     const newMaterial = await Material.create({
       userId,
       title,
       description,
-      materialURL,
+      materialURL: embedUrl,
       duration,
-      image
+      image: imageUrl,
     });
     res.status(201).json(newMaterial);
   } catch (error) {
     console.error("Error creating a new material:", error);
     res.status(500).json({ error: "Internal server error" });
   }
-}; 
+};
 
 // PUT /api/materials/:id
 exports.updateMaterials = async (req, res) => {
@@ -77,34 +88,55 @@ exports.updateMaterials = async (req, res) => {
       where: { email: res.locals.user.email },
     });
 
-    if(user.roleId === 3) {
-      return res.status(403).json({ message: "User not authorized." })
+    if (user.roleId === 3) {
+      return res.status(403).json({ message: "User not authorized." });
     }
 
-    const { title, description, materialURL, duration, image } = req.body;
-    const numAffectedRows = await Material.update({  
-      title, 
-      description, 
-      materialURL, 
-      duration, 
-      image 
-    },
-    { where: { id: req.params.id } }
-    );
+    const material = await Material.findByPk(req.params.id);
+    if (!material) {
+      return res
+        .status(404)
+        .json({ message: `Material with id: ${req.params.id} not found` });
+    }
+
+    const { title, description, materialURL, duration } = req.body;
+
+    let myId = materialURL ? getId(materialURL) : null;
+    if (materialURL && myId === "error") {
+      return res.status(400).json({ error: "Invalid YouTube URL" });
+    }
+
+    const embedUrl = materialURL
+      ? `https://www.youtube.com/embed/${myId}?autoplay=1`
+      : material.materialURL;
+    const imageUrl = materialURL
+      ? `https://img.youtube.com/vi/${myId}/0.jpg`
+      : material.image;
+
+    const updatedData = {
+      title: title || material.title,
+      description: description || material.description,
+      materialURL: embedUrl,
+      duration: duration || material.duration,
+      image: imageUrl,
+    };
+
+    const numAffectedRows = await Material.update(updatedData, {
+      where: { id: req.params.id },
+    });
     if (numAffectedRows[0] > 0) {
       const updatedMaterial = await Material.findByPk(req.params.id);
       res.json(updatedMaterial);
     } else {
       res
-      .status(404)
-      .json({ message: `Material with id: ${req.params.id} not found` });
+        .status(404)
+        .json({ message: `Material with id: ${req.params.id} not found` });
     }
-    } catch (error) {
+  } catch (error) {
     console.error("Error updating material:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 };
-
 
 // DELETE /api/materials/:id
 exports.deleteMaterials = async (req, res) => {
@@ -113,8 +145,8 @@ exports.deleteMaterials = async (req, res) => {
       where: { email: res.locals.user.email },
     });
 
-    if(user.roleId === 3) {
-      return res.status(403).json({ message: "User not authorized." })
+    if (user.roleId === 3) {
+      return res.status(403).json({ message: "User not authorized." });
     }
 
     const numDeleted = await Material.destroy({ where: { id: req.params.id } });
@@ -130,4 +162,3 @@ exports.deleteMaterials = async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
-
