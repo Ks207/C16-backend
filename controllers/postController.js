@@ -14,6 +14,7 @@ exports.getAllPosts = async (req, res) => {
     );
     const searchTerm = req.query.search || "";
     const comunaFilter = req.query.comuna || "";
+    const userId = req.query.userId || "";
 
     const { count, rows } = await Post.findAndCountAll({
       include: [
@@ -30,8 +31,9 @@ exports.getAllPosts = async (req, res) => {
         active: true,
         parentId: null,
         ...(comunaFilter && {
-          "$user.comuna$": { [Op.iLike]: `%${comunaFilter}%` },
+          "$user.comuna$": { [Op.iLike]: comunaFilter },
         }),
+        ...(userId && { userId: userId }),
       },
       order: [["createdAt", "DESC"]],
     });
@@ -95,13 +97,17 @@ exports.getPostById = async (req, res) => {
 // POST /api/posts
 exports.createPost = async (req, res) => {
   try {
-
     const user = await User.findOne({
       where: { email: res.locals.user.email },
-    })
+    });
 
     const { content, image, parentId } = req.body;
-    const newPost = await Post.create({ userId: user.id, content, image, parentId });
+    const newPost = await Post.create({
+      userId: user.id,
+      content,
+      image,
+      parentId,
+    });
     res.status(201).json(newPost);
   } catch (error) {
     console.error("Error creating post:", error);
