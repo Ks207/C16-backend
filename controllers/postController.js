@@ -1,4 +1,4 @@
-const { Post, User } = require("../models/index");
+const { Post, User, Like } = require("../models/index");
 const {
   getPagination,
   getPaginationData,
@@ -73,6 +73,7 @@ exports.getPostById = async (req, res) => {
         ],
         limit: pageSize,
         offset: offset,
+        order: [["createdAt", "DESC"]],
       });
       const paginationData = getPaginationData(
         { count, rows },
@@ -162,6 +163,37 @@ exports.deletePost = async (req, res) => {
     }
   } catch (error) {
     console.error("Error deleting post:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+// Like or Unlike a post
+exports.likePost = async (req, res) => {
+  try {
+    const user = await User.findOne({
+      where: { email: res.locals.user.email },
+    });
+
+    const userId = user.id;
+    const { postId } = req.params;
+
+    if (!userId) {
+      return res.status(400).json({ error: "User ID is missing." });
+    }
+
+    const existingLike = await Like.findOne({
+      where: { userId, postId },
+      attributes: ["id", "userId", "postId", "createdAt", "updatedAt"],
+    });
+
+    if (existingLike) {
+      await Like.destroy({ where: { id: existingLike.id } });
+      res.status(200).json({ message: "Like removed" });
+    } else {
+      await Like.create({ userId, postId });
+      res.status(201).json({ message: "Post liked" });
+    }
+  } catch (error) {
+    console.error("Error toggling like:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 };
