@@ -1,6 +1,7 @@
 const { Partner } = require("../models/index");
 const { User } = require("../models/index");
 const { Op } = require('sequelize');
+const validateUrl = require("../utils/validateUrl")
 const { 
   getPagination, 
   getPaginationData 
@@ -51,14 +52,17 @@ exports.getPartnerById = async (req, res) => {
 // POST /api/partners
 exports.createPartner = async(req,res)=>{
   try {
+    const partnerUrl = validateUrl(req.body.url);
+    if(!partnerUrl) return res.status(400).json({ message: "Invalid Url" });
+    
     const userId = res.locals.user.uid;
-    const { name, description, url,image } = req.body;
+    const { name, description, image } = req.body;
     const newPartner = await Partner.create({
       userId,
       name,
       description,
-      url,
-      image,
+      url: partnerUrl,
+      image
     })
     res.status(201).json(newPartner);
   } catch (error) {
@@ -70,18 +74,21 @@ exports.createPartner = async(req,res)=>{
 // PUT /api/partners/:partnerId
 exports.updatePartner = async (req, res) => {
   try {
+    const partnerUrl = validateUrl(req.body.url);
+    if(!partnerUrl) return res.status(400).json({ message: "Invalid Url" });
+
     const user = await User.findOne({
       where: {email: res.locals.user.email}
     });
     if(user.roleId === 3) {
       return res.status(403).json({ message:'User not authorized' });
     };
-    const { name, description, image, url } = req.body;
+    const { name, description, image } = req.body;
     const numAffectedRows = await Partner.update({
       name,
       description,
       image,
-      url
+      url: partnerUrl
     },
     {
       where:{ id:req.params.partnerId },
