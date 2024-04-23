@@ -109,7 +109,12 @@ router.get("/posts/:id", postController.getPostById);
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.post("/posts", authMiddleware, validateNewPost, postController.createPost);
+router.post(
+  "/posts",
+  authMiddleware,
+  validateNewPost,
+  postController.createPost
+);
 
 /**
  * @swagger
@@ -149,7 +154,7 @@ router.post("/posts", authMiddleware, validateNewPost, postController.createPost
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.put("/posts/:id", postController.updatePost);
+router.put("/posts/:id", authMiddleware, postController.updatePost);
 
 /**
  * @swagger
@@ -179,6 +184,6 @@ router.put("/posts/:id", postController.updatePost);
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.delete("/posts/:id", postController.deletePost);
+router.delete("/posts/:id", authMiddleware, postController.deletePost);
 
 module.exports = router;
