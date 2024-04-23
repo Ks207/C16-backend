@@ -23,7 +23,7 @@ const Post = sequelize.define(
       type: Sequelize.BOOLEAN,
       allowNull: false,
       defaultValue: true,
-    }
+    },
   },
   {
     timestamps: true,
@@ -37,6 +37,12 @@ const Post = sequelize.define(
               `(SELECT COUNT(*) FROM "Posts" AS "Replies" WHERE "Replies"."parentId" = "Post"."id")`
             ),
             "repliesCount",
+          ],
+          [
+            sequelize.literal(
+              `(SELECT COUNT(*) FROM "Likes" WHERE "Likes"."postId" = "Post"."id")`
+            ),
+            "likesCount",
           ],
         ],
       },
