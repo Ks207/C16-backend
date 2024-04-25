@@ -63,7 +63,7 @@ exports.createMaterials = async (req, res) => {
       return res.status(400).json({ error: "Invalid YouTube URL" });
     }
 
-    const embedUrl = `https://www.youtube.com/embed/${myId}?autoplay=1`;
+    const embedUrl = `https://www.youtube.com/embed/${myId}`;
     const imageUrl = `https://img.youtube.com/vi/${myId}/0.jpg`;
 
     const newMaterial = await Material.create({
@@ -107,7 +107,7 @@ exports.updateMaterials = async (req, res) => {
     }
 
     const embedUrl = materialURL
-      ? `https://www.youtube.com/embed/${myId}?autoplay=1`
+      ? `https://www.youtube.com/embed/${myId}`
       : material.materialURL;
     const imageUrl = materialURL
       ? `https://img.youtube.com/vi/${myId}/0.jpg`
