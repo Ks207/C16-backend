@@ -61,6 +61,11 @@ exports.createResource = async (req, res) => {
     if (req.file) {
       imageUrl = await uploadImage(req.file.buffer, req.file.originalname, userId);
     }
+
+    if (highlighted) {
+      await Resource.update({ highlighted: false }, { where: { highlighted: true } });
+    }
+
     const newResource = await Resource.create({
       userId,
       description,
@@ -101,6 +106,10 @@ exports.updateResource = async (req, res) => {
         }
         imageUrl = await uploadImage(req.file.buffer, req.file.originalname, userId);
       }
+    }
+
+    if (highlighted) {
+      await Resource.update({ highlighted: false }, { where: { highlighted: true } });
     }
 
     const numAffectedRows = await Resource.update(
