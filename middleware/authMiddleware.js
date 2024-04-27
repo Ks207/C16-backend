@@ -5,7 +5,7 @@ const validateFirebaseToken = async (req, res, next) => {
   const token = req.headers.authorization.split(" ")[1];
 
   if (!token) {
-    return res.status(401).json({ message: "No token provided" }); 
+    return res.status(401).json({ message: "Token no fue entregado" }); 
   }
 
   try {
@@ -19,8 +19,8 @@ const validateFirebaseToken = async (req, res, next) => {
     res.locals.user = userData;
     next();
   } catch (error) {
-    console.error("Error verifying Firebase token:", error);
-    return res.status(403).json({ error: "Unauthorized!" });
+    console.error("Error validando token de Firebase:", error);
+    return res.status(403).json({ error: "No autorizado!" });
   }
 
 };

@@ -74,7 +74,7 @@ try {
     })
 }
 catch (error) {
-  return res.status(500).json({ error: "Internal Server Error" });
+  return res.status(500).json({ error: "Error interno del servidor" });
 }
 
   
@@ -107,13 +107,13 @@ exports.getAllUsers = async (req, res) => {
     if (response.data.length === 0 && name) {
       return res
         .status(404)
-        .json({ message: `No users with name: ${name} were found` });
+        .json({ message: `No users con nombre: ${name} fueron encontrados` });
     }
 
     res.json(response);
   } catch (error) {
-    console.error("Error retrieving users: ", error);
-    res.status(500).json({ error: "Internal server error" });
+    console.error("Error obteniendo usuarios: ", error);
+    res.status(500).json({ error: "Error interno del servidor" });
   }
 };
 
@@ -125,13 +125,13 @@ exports.getUserById = async (req, res) => {
     if (!user) {
       return res
         .status(404)
-        .json({ message: `User with id: ${req.params.userId} not found!` });
+        .json({ message: `User con id: ${req.params.userId} no encontrado!` });
     }
 
     res.json(user);
   } catch (error) {
-    console.error("Error retrieving user: ", error);
-    res.status(500).json({ error: "Internal server error" });
+    console.error("Error obteniendo usuario: ", error);
+    res.status(500).json({ error: "Error interno del servidor" });
   }
 };
 
@@ -167,8 +167,8 @@ exports.createUser = async (req, res) => {
     
     res.status(201).json(newUser);
   } catch (error) {
-    console.error("Error creating user:", error);
-    res.status(500).json({ error: "Unable to create user" });
+    console.error("Error creando usuario:", error);
+    res.status(500).json({ error: "Error interno del servidor" });
   }
 };
 
@@ -215,13 +215,13 @@ exports.createAdmin = async (req, res) => {
       res.status(201).json(admin);
 
     } else {
-      return res.status(403).json({ message: "Only super admins can create admins" });
+      return res.status(403).json({ message: "solo super administradores pueden crear administradores" });
     }
 
    
   } catch (error) {
-    console.error("Error creating admin:", error);
-    res.status(500).json({ error: "Unable to create admin" });
+    console.error("Error creando administradores:", error);
+    res.status(500).json({ error: "Error interno del servidor" });
   }
 }
 
@@ -233,7 +233,7 @@ exports.deleteUser = async (req, res) => {
     });
 
     if (user.roleId === 3) {
-      return res.status(403).json({ message: "User not authorized" });
+      return res.status(403).json({ message: "User no autorizado." });
     }
 
     if (user.roleId === 2) {
@@ -242,23 +242,23 @@ exports.deleteUser = async (req, res) => {
       });
 
       if (!userToDelete) {
-        return res.status(400).json({ message: "User not found or unauthorized to delete this user" });
+        return res.status(400).json({ message: "User no encontrado o no autorizado" });
       }
     }
 
     const userToDelete = await User.findByPk(req.params.userId);
     if (!userToDelete) {
-      return res.status(400).json({ message: "User not found" });
+      return res.status(400).json({ message: "Usuario no encontrado" });
     }
     // Delete the user from Firebase
     try {
       await firebaseAdminAuth.deleteUser(userToDelete.dataValues.id);
     } catch (error) {
-      console.error("Error deleting user from Firebase:", error);
+      console.error("Error borrando usuario de Firebase:", error);
       if (error.code !== "auth/user-not-found") {
         return res
           .status(500)
-          .json({ error: "Failed to delete user from Firebase" });
+          .json({ error: "Error al borrar usuario de Firebase" });
       }
     }
 
@@ -267,13 +267,13 @@ exports.deleteUser = async (req, res) => {
     });
 
     if (numDeleted) {
-      return res.status(204).json({ message: "User deleted" });
+      return res.status(204).json({ message: "User borrado" });
     } else {
-      return res.status(400).json({ message: `User with id: ${req.params.userId} not found` });
+      return res.status(400).json({ message: `User con id: ${req.params.userId} no encontrado` });
     }
   } catch (error) {
-    console.error("Error deleting user:", error);
-    return res.status(500).json({ error: "Internal Server Error" });
+    console.error("Error borrando usuario:", error);
+    return res.status(500).json({ error: "Error interno del servidor" });
   }
 };
 
@@ -286,23 +286,23 @@ exports.updateUser = async (req, res) => {
 
     if (user.roleId === 3) {
       if (user.id !== req.params.userId || req.body.roleId) {
-        return res.status(403).json({ message: "Cuidador cannot update others or their own roleId" });
+        return res.status(403).json({ message: "Cuidador no puede actualizar otros usuarios o su rol" });
       }
     }
 
     if (user.roleId === 2) {
       if (req.params.userId !== user.id) {
         if (req.body.roleId) {
-          return res.status(403).json({ message: "Admin cannot update roleId of others" });
+          return res.status(403).json({ message: "Admin no puede actualizar el rol de otros usuarios" });
         }
       } else {
         if (req.body.roleId) {
-          return res.status(403).json({ message: "Admin cannot update their own roleId" });
+          return res.status(403).json({ message: "Admin no puede actualizar su propio rol" });
         }
       }
       const userToUpdate = await User.findByPk(req.params.userId);
       if (!userToUpdate || userToUpdate.roleId !== 3 && userToUpdate.id !== user.id) {
-        return res.status(400).json({ message: "User not found or unauthorized to update this user" });
+        return res.status(400).json({ message: "Usuario no encontrado o no autorizado" });
       }
     }
 
@@ -314,10 +314,10 @@ exports.updateUser = async (req, res) => {
       const updatedUser = await User.findByPk(req.params.userId);
       return res.json(updatedUser);
     } else {
-      return res.status(400).json({ message: `User with id: ${req.params.userId} not found` });
+      return res.status(400).json({ message: `User con id: ${req.params.userId} no encontrado` });
     }
   } catch (error) {
-    console.error("Error updating user:", error);
-    return res.status(500).json({ error: "Internal Server Error" });
+    console.error("Error actualizando usuario:", error);
+    return res.status(500).json({ error: "Error interno del servidor" });
   }
 };

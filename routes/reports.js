@@ -56,7 +56,7 @@ const {validateNewReport, validateUpdateReport} = require("../middleware/validat
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */ 
-router.get("/reports", reportController.getAllReports);
+router.get("/reports",  authMiddleware , reportController.getAllReports);
 
 
 /**
@@ -91,7 +91,7 @@ router.get("/reports", reportController.getAllReports);
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.get("/reports/:id", reportController.getReportById);
+router.get("/reports/:id", authMiddleware , reportController.getReportById);
 
 
 /**
@@ -190,7 +190,7 @@ router.put("/reports/:id",  validateUpdateReport, authMiddleware ,reportControll
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.delete("/reports/:id", reportController.deleteReport);
+router.delete("/reports/:id", authMiddleware, reportController.deleteReport);
 
 
 module.exports = router;
