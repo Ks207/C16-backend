@@ -30,8 +30,8 @@ exports.getAllMaterials = async (req, res) => {
     const response = getPaginationData({ count, rows }, currentPage, pageSize);
     res.json(response);
   } catch (error) {
-    console.error("Error retrieving materials:", error);
-    res.status(500).json({ error: "Internal server error" });
+    console.error("Error obteniendo materiales:", error);
+    res.status(500).json({ error: "Error interno del servidor" });
   }
 };
 
@@ -44,11 +44,11 @@ exports.getMaterialsById = async (req, res) => {
     } else {
       res
         .status(404)
-        .json({ message: `Material with id=${req.params.id} not found` });
+        .json({ message: `Material con id=${req.params.id} no encontrado` });
     }
   } catch (error) {
-    console.error("Error retrieving material: ", error);
-    res.status(500).json({ error: "Internal server error" });
+    console.error("Error obteniendo material: ", error);
+    res.status(500).json({ error: "Error interno del servidor" });
   }
 };
 
@@ -60,7 +60,7 @@ exports.createMaterials = async (req, res) => {
 
     const myId = getId(materialURL);
     if (myId === "error") {
-      return res.status(400).json({ error: "Invalid YouTube URL" });
+      return res.status(400).json({ error: "URL de YouTube no válida" });
     }
 
     const embedUrl = `https://www.youtube.com/embed/${myId}`;
@@ -76,8 +76,8 @@ exports.createMaterials = async (req, res) => {
     });
     res.status(201).json(newMaterial);
   } catch (error) {
-    console.error("Error creating a new material:", error);
-    res.status(500).json({ error: "Internal server error" });
+    console.error("Error creando material:", error);
+    res.status(500).json({ error: "Error interno del servidor" });
   }
 };
 
@@ -89,21 +89,21 @@ exports.updateMaterials = async (req, res) => {
     });
 
     if (user.roleId === 3) {
-      return res.status(403).json({ message: "User not authorized." });
+      return res.status(403).json({ message: "Acceso denegado." });
     }
 
     const material = await Material.findByPk(req.params.id);
     if (!material) {
       return res
         .status(404)
-        .json({ message: `Material with id: ${req.params.id} not found` });
+        .json({ message: `Material con id: ${req.params.id} no encontrado` });
     }
 
     const { title, description, materialURL, duration } = req.body;
 
     let myId = materialURL ? getId(materialURL) : null;
     if (materialURL && myId === "error") {
-      return res.status(400).json({ error: "Invalid YouTube URL" });
+      return res.status(400).json({ error: "URL de YouTube no válida" });
     }
 
     const embedUrl = materialURL
@@ -130,11 +130,11 @@ exports.updateMaterials = async (req, res) => {
     } else {
       res
         .status(404)
-        .json({ message: `Material with id: ${req.params.id} not found` });
+        .json({ message: `Material con id: ${req.params.id} no encontrado` });
     }
   } catch (error) {
-    console.error("Error updating material:", error);
-    res.status(500).json({ error: "Internal server error" });
+    console.error("Error actualizando material:", error);
+    res.status(500).json({ error: "Error interno del servidor" });
   }
 };
 
@@ -146,19 +146,19 @@ exports.deleteMaterials = async (req, res) => {
     });
 
     if (user.roleId === 3) {
-      return res.status(403).json({ message: "User not authorized." });
+      return res.status(403).json({ message: "Acceso denegado." });
     }
 
     const numDeleted = await Material.destroy({ where: { id: req.params.id } });
     if (numDeleted) {
-      res.status(204).json({ message: "Material deleted successfully" });
+      res.status(204).json({ message: "Material borrado correctamente" });
     } else {
       res
         .status(404)
-        .json({ message: `Material with id=${req.params.id} not found` });
+        .json({ message: `Material con id=${req.params.id} no encontrado` });
     }
   } catch (error) {
-    console.error("Error deleting Material:", error);
-    res.status(500).json({ error: "Internal server error" });
+    console.error("Error eliminando material:", error);
+    res.status(500).json({ error: "Error interno del servidor" });
   }
 };

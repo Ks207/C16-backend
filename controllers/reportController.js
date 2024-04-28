@@ -7,6 +7,15 @@ const {
 
 exports.getAllReports = async (req, res) => {
     try{
+
+        const user = await User.findOne({
+            where: { email: res.locals.user.email },
+        });
+
+        if (user.roleId === 3) {
+            return res.status(403).json({ message: "User no autorizado" });
+          }
+
         const { currentPage, pageSize, offset } = getPagination(
             req.query.page,
             req.query.limit
@@ -36,32 +45,41 @@ exports.getAllReports = async (req, res) => {
      });
 
      if(!count){
-         return res.status(404).json({ message: "No reports found" });
+         return res.status(404).json({ message: "No reports fueron encontrados" });
      }
 
      const reports = getPaginationData({ count, rows }, currentPage, pageSize);
      
      res.status(200).json(reports);
     } catch (error) {
-     console.error("Error retrieving reports:", error);
-     res.status(500).json({ error: "Internal server error" });
+     console.error("Error obteniendo reportes:", error);
+     res.status(500).json({ error: "Error interno del servidor" });
     }
  }
  
 
 exports.getReportById = async (req, res) => {
     try{
+        
+        const user = await User.findOne({
+            where: { email: res.locals.user.email },
+        });
+
+        if (user.roleId === 3) {
+            return res.status(403).json({ message: "User no autorizado" });
+          }
+
         const report = await Report.findByPk(req.params.id);
         if(report){
             res.status(200).json(report);
         } else {
             res
                 .status(404)
-                .json({ message: `Report with id ${req.params.id} not found` });
+                .json({ message: `Report con id ${req.params.id} no encontrado` });
         }
     } catch (error) {
-        console.error("Error retrieving report:", error);
-        res.status(500).json({ error: "Internal server error" });
+        console.error("Error obteniendo reporte:", error);
+        res.status(500).json({ error: "Error interno del servidor" });
     }
 }
 
@@ -76,7 +94,7 @@ exports.createReport = async (req, res) => {
 
         const existingCopyReport = await Report.findOne({ where: { postId: postId, userId: user.id } });
         if (existingCopyReport) {
-            return res.status(409).json({ message: "You have already reported this post" });
+            return res.status(409).json({ message: "Ya haz reportado este post" });
         }
 
         const existingReport = await Report.findOne({ where: { postId: postId } });
@@ -95,8 +113,8 @@ exports.createReport = async (req, res) => {
 
         res.status(200).json(newReport);
     } catch (error) {
-        console.error("Error creating report:", error);
-        res.status(500).json({ error: "Internal server error" });
+        console.error("Error creando reporte:", error);
+        res.status(500).json({ error: "Error interno del servidor" });
     }
 }
 
@@ -108,7 +126,7 @@ exports.updateReport = async (req, res) => {
         });
 
         if (user.roleId === 3) {
-            return res.status(403).json({ message: "User not authorized" });
+            return res.status(403).json({ message: "User no autorizado" });
           }
          
         const { active } = req.body;
@@ -130,25 +148,34 @@ exports.updateReport = async (req, res) => {
             }
         }   
      
-        res.status(200).json({ message: "Report updated" });
+        res.status(200).json({ message: "Report actualizado" });
     } catch (error) {
-        console.error("Error updating report:", error);
-        res.status(500).json({ error: "Internal server error" });
+        console.error("Error actualizando report:", error);
+        res.status(500).json({ error: "Error interno del servidor" });
     }
 }
 
 exports.deleteReport = async (req, res) => {
     try {
+
+        const user = await User.findOne({
+            where: { email: res.locals.user.email },
+        });
+
+        if (user.roleId === 3) {
+            return res.status(403).json({ message: "User no autorizado" });
+          }
+
         const deletedReport = await Report.destroy({ where: { id: req.params.id } });
         if (deletedReport) {
-            res.status(200).json({ message: "Report deleted" });
+            res.status(200).json({ message: "Report borrado" });
         } else {
             res
                 .status(404)
-                .json({ message: `Report with id ${req.params.id} not found` });
+                .json({ message: `Report con id ${req.params.id} no encontrado` });
         }
     } catch (error) {
-        console.error("Error deleting report:", error);
-        res.status(500).json({ error: "Internal server error" });
+        console.error("Error eliminando report:", error);
+        res.status(500).json({ error: "Error interno del servidor" });
     }
 }

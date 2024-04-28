@@ -40,8 +40,8 @@ exports.getAllPosts = async (req, res) => {
     const response = getPaginationData({ count, rows }, currentPage, pageSize);
     res.json(response);
   } catch (error) {
-    console.error("Error retrieving posts:", error);
-    res.status(500).json({ error: "Internal server error" });
+    console.error("Error obteniendo posts:", error);
+    res.status(500).json({ error: "Error interno del servidor" });
   }
 };
 
@@ -87,11 +87,11 @@ exports.getPostById = async (req, res) => {
     } else {
       res
         .status(404)
-        .json({ message: `Post with id=${req.params.id} not found` });
+        .json({ message: `Post con id=${req.params.id} no encontrado` });
     }
   } catch (error) {
-    console.error("Error retrieving post:", error);
-    res.status(500).json({ error: "Internal server error" });
+    console.error("Error obteniendo post:", error);
+    res.status(500).json({ error: "Error interno del servidor" });
   }
 };
 
@@ -111,8 +111,8 @@ exports.createPost = async (req, res) => {
     });
     res.status(201).json(newPost);
   } catch (error) {
-    console.error("Error creating post:", error);
-    res.status(500).json({ error: "Internal server error" });
+    console.error("Error creando post:", error);
+    res.status(500).json({ error: "Error interno del servidor" });
   }
 };
 
@@ -138,11 +138,11 @@ exports.updatePost = async (req, res) => {
     } else {
       res
         .status(404)
-        .json({ message: `Post with id=${req.params.id} not found` });
+        .json({ message: `Post con id=${req.params.id} no encontrado` });
     }
   } catch (error) {
-    console.error("Error updating post:", error);
-    res.status(500).json({ error: "Internal server error" });
+    console.error("Error actualizando post:", error);
+    res.status(500).json({ error: "Error interno del servidor" });
   }
 };
 
@@ -155,15 +155,15 @@ exports.deletePost = async (req, res) => {
     // Delete the main post
     const numDeleted = await Post.destroy({ where: { id: req.params.id } });
     if (numDeleted) {
-      res.status(204).json({ message: "Post deleted successfully" });
+      res.status(204).json({ message: "Post borrado correctamente" });
     } else {
       res
         .status(404)
-        .json({ message: `Post with id=${req.params.id} not found` });
+        .json({ message: `Post con id=${req.params.id} no encontrado` });
     }
   } catch (error) {
-    console.error("Error deleting post:", error);
-    res.status(500).json({ error: "Internal server error" });
+    console.error("Error eliminando post:", error);
+    res.status(500).json({ error: "Error interno del servidor" });
   }
 };
 // Like or Unlike a post
@@ -177,7 +177,7 @@ exports.likePost = async (req, res) => {
     const { postId } = req.params;
 
     if (!userId) {
-      return res.status(400).json({ error: "User ID is missing." });
+      return res.status(400).json({ error: "User ID no encontrado" });
     }
 
     const existingLike = await Like.findOne({
@@ -187,13 +187,13 @@ exports.likePost = async (req, res) => {
 
     if (existingLike) {
       await Like.destroy({ where: { id: existingLike.id } });
-      res.status(200).json({ message: "Like removed" });
+      res.status(200).json({ message: "Like removido" });
     } else {
       await Like.create({ userId, postId });
-      res.status(201).json({ message: "Post liked" });
+      res.status(201).json({ message: "Like agregado" });
     }
   } catch (error) {
-    console.error("Error toggling like:", error);
-    res.status(500).json({ error: "Internal server error" });
+    console.error("Error al dar like:", error);
+    res.status(500).json({ error: "Error interno del servidor" });
   }
 };

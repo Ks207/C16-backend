@@ -30,8 +30,8 @@ exports.getAllResources = async (req, res) => {
     const response = getPaginationData({ count, rows }, currentPage, pageSize);
     res.json(response);
   } catch (error) {
-    console.error("Error retrieving resources:", error);
-    res.status(500).json({ error: "Internal server error" });
+    console.error("Error obteniendo recursos:", error);
+    res.status(500).json({ error: "Error interno del servidor" });
   }
 };
 
@@ -44,11 +44,11 @@ exports.getResourceById = async (req, res) => {
     } else {
       res
         .status(404)
-        .json({ message: `Resource with id=${req.params.id} not found` });
+        .json({ message: `Recurso con id=${req.params.id} no encontrado` });
     }
   } catch (error) {
-    console.error("Error retrieving resource:", error);
-    res.status(500).json({ error: "Internal server error" });
+    console.error("Error obteniendo recursos:", error);
+    res.status(500).json({ error: "Error interno del servidor" });
   }
 };
 
@@ -76,8 +76,8 @@ exports.createResource = async (req, res) => {
     });
     res.status(201).json(newResource);
   } catch (error) {
-    console.error("Error creating resource:", error);
-    res.status(500).json({ error: "Internal server error" });
+    console.error("Error creando recurso:", error);
+    res.status(500).json({ error: "Error interno del servidor" });
   }
 };
 
@@ -89,7 +89,7 @@ exports.updateResource = async (req, res) => {
     });
 
     if (user.roleId === 3) {
-      return res.status(403).json({ message: "User not authorized." });
+      return res.status(403).json({ message: "User no autorizado." });
     }
 
     const userId = res.locals.user.uid;
@@ -102,7 +102,7 @@ exports.updateResource = async (req, res) => {
         try {
           await deleteImage(resourceToUpdate.image);
         } catch (error) {
-          console.log("Failed to delete image");
+          console.log("Ocurrio un error al borrar la imagen:", error);
         }
         imageUrl = await uploadImage(req.file.buffer, req.file.originalname, userId);
       }
@@ -121,11 +121,11 @@ exports.updateResource = async (req, res) => {
       const updatedResource = await Resource.findByPk(req.params.id);
       res.json(updatedResource);
     } else {
-      res.status(404).json({ message: `Resource with id=${req.params.id} not found` });
+      res.status(404).json({ message: `Recurso con id=${req.params.id} no encontrado` });
     }
   } catch (error) {
-    console.error("Error updating resource:", error);
-    res.status(500).json({ error: "Internal server error" });
+    console.error("Error actualizando recurso:", error);
+    res.status(500).json({ error: "Error interno del servidor" });
   }
 };
 
@@ -137,30 +137,30 @@ exports.deleteResource = async (req, res) => {
     });
 
     if(user.roleId === 3) {
-      return res.status(403).json({ message: "User not authorized." });
+      return res.status(403).json({ message: "User no autorizado" });
     }
 
     const resource = await Resource.findByPk(req.params.id);
     if (!resource) {
-      return res.status(404).json({ message: `Resource with id=${req.params.id} not found` });
+      return res.status(404).json({ message: `Resource con id=${req.params.id} no encontrado` });
     }
 
     if (resource.image) {
       try {
         await deleteImage(resource.image);
       } catch (error) {
-        console.log("Failed to delete image");
+        console.log("Ocurrio un error al borrar la imagen:", error);
       }
     }
 
     const numDeleted = await Resource.destroy({ where: { id: req.params.id } });
     if (numDeleted) {
-      res.status(204).json({ message: "Resource deleted successfully" });
+      res.status(204).json({ message: "Recurso eliminado correctamente" });
     } else {
-      res.status(404).json({ message: `Resource with id=${req.params.id} not found` });
+      res.status(404).json({ message: `Resource con id=${req.params.id} no encontrado` });
     }
   } catch (error) {
-    console.error("Error deleting resource:", error);
-    res.status(500).json({ error: "Internal server error" });
+    console.error("Error eliminando recurso:", error);
+    res.status(500).json({ error: "Error interno del servidor" });
   }
 };
