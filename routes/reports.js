@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const reportController = require("../controllers/reportController");
 const authMiddleware = require("../middleware/authMiddleware");
-const {validateNewReport, validateUpdateReport} = require("../middleware/validator/reportValidator");
+const {validateNewReport, validateUpdateReport,validateGetReports, validateDeleteReport} = require("../middleware/validator/reportValidator");
 
 
 
@@ -56,7 +56,7 @@ const {validateNewReport, validateUpdateReport} = require("../middleware/validat
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */ 
-router.get("/reports",  authMiddleware , reportController.getAllReports);
+router.get("/reports", validateGetReports  ,authMiddleware , reportController.getAllReports);
 
 
 /**
@@ -91,7 +91,7 @@ router.get("/reports",  authMiddleware , reportController.getAllReports);
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.get("/reports/:id", authMiddleware , reportController.getReportById);
+router.get("/reports/:id",  validateGetReports , authMiddleware , reportController.getReportById);
 
 
 /**
@@ -190,7 +190,7 @@ router.put("/reports/:id",  validateUpdateReport, authMiddleware ,reportControll
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.delete("/reports/:id", authMiddleware, reportController.deleteReport);
+router.delete("/reports/:id", validateDeleteReport ,authMiddleware, reportController.deleteReport);
 
 
 module.exports = router;
