@@ -2,6 +2,7 @@ const Router = require("express");
 const router = Router();
 const partnerController = require("../controllers/partnerController");
 const authMiddleware = require("../middleware/authMiddleware");
+const upload = require("../middleware/multerMiddleware");
 const {
     validateNewPartner, 
     validateUpdatePartner, 
@@ -107,7 +108,7 @@ router.get("/partners/:partnerId", partnerController.getPartnerById);
  *                $ref: '#/components/schemas/ServerError'
  */
 
-router.post("/partners", validateNewPartner, authMiddleware, partnerController.createPartner);
+router.post("/partners", upload.single("image"), validateNewPartner, authMiddleware, partnerController.createPartner);
 
 /**
  * @swagger
@@ -155,7 +156,7 @@ router.post("/partners", validateNewPartner, authMiddleware, partnerController.c
  *              $ref: '#/components/schemas/ServerError'
  */        
 
-router.put("/partners/:partnerId", validateUpdatePartner, authMiddleware, partnerController.updatePartner);
+router.put("/partners/:partnerId", upload.single("image"), validateUpdatePartner, authMiddleware, partnerController.updatePartner);
 
 /**
  * @swagger
