@@ -7,7 +7,7 @@ const {
 
 exports.getAllReports = async (req, res) => {
     try{
-
+r
         const user = await User.findOne({
             where: { email: res.locals.user.email },
         });

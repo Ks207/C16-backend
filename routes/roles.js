@@ -1,8 +1,10 @@
 const router = require("express").Router();
 const roleController = require("../controllers/roleController");
+const authMiddleware = require("../middleware/authMiddleware");
 const {
     validateNewRole,
     validateUpdateRole,
+    validateDeleteRole
   } = require("../middleware/validator/roleValidator");
 
 /**
@@ -174,6 +176,6 @@ router.put("/roles/:id", validateUpdateRole ,roleController.updateRole);
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */ 
-router.delete("/roles/:id", roleController.deleteRole);
+router.delete("/roles/:id", validateDeleteRole ,authMiddleware ,roleController.deleteRole);
 
 module.exports = router;

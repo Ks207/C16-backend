@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const reportController = require("../controllers/reportController");
 const authMiddleware = require("../middleware/authMiddleware");
-const {validateNewReport, validateUpdateReport} = require("../middleware/validator/reportValidator");
+const {validateNewReport, validateUpdateReport,validateGetReports} = require("../middleware/validator/reportValidator");
 
 
 
@@ -56,7 +56,7 @@ const {validateNewReport, validateUpdateReport} = require("../middleware/validat
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */ 
-router.get("/reports",  authMiddleware , reportController.getAllReports);
+router.get("/reports", validateGetReports  ,authMiddleware , reportController.getAllReports);
 
 
 /**
