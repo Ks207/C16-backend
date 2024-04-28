@@ -7,12 +7,12 @@ exports.getAllRoles = async (req, res) => {
         if (!roles) {
             return res
                 .status(404)
-                .json({ message: "No roles found" });
+                .json({ message: "No rols encontrados" });
         }
         res.json(roles);
     } catch (error) {
-        console.error("Error retrieving roles:", error);
-        res.status(500).json({ error: "Internal server error" });
+        console.error("Error obteniendo roles:", error);
+        res.status(500).json({ error: "Error interno del servidor" });
     }
 }
 
@@ -25,11 +25,11 @@ exports.getRoleById = async (req, res) => {
         } else {
             res
                 .status(404)
-                .json({ message: `Role with id ${req.params.id} not found` });
+                .json({ message: `Role con id ${req.params.id} no encontrado` });
         }
     } catch (error) {
-        console.error("Error retrieving role:", error);
-        res.status(500).json({ error: "Internal server error" });
+        console.error("Error obteniendo rol:", error);
+        res.status(500).json({ error: "Error interno del servidor" });
     }
 }
 
@@ -41,13 +41,13 @@ exports.createRole = async (req, res) => {
         if (existingRole) {
             return res
                 .status(409)
-                .json({ message: `Role with name ${name} already exists` });
+                .json({ message: `Role con nombre ${name} ya existe` });
         }
         const newRole = await Role.create({ name });
         res.status(201).json(newRole);
     } catch (error) {
-        console.error("Error creating role:", error);
-        res.status(500).json({ error: "Internal server error" });
+        console.error("Error creando rol:", error);
+        res.status(500).json({ error: "Error interno del servidor" });
     }
 }
 
@@ -59,7 +59,7 @@ exports.updateRole = async (req, res) => {
         if (existingRole) {
             return res
                 .status(409)
-                .json({ message: `Role with name ${name} already exists` });
+                .json({ message: `Role con nombre ${name} ya existe` });
         }
         const numAffectedRows = await Role.update({ name }, { where: { id: req.params.id } });
         if (numAffectedRows[0] > 0) {
@@ -68,28 +68,37 @@ exports.updateRole = async (req, res) => {
         } else {
             res
                 .status(404)
-                .json({ message: `Role with id ${req.params.id} not found` });
+                .json({ message: `Role con id ${req.params.id} no encontrado` });
         }
     } catch (error) {
-        console.error("Error updating role:", error);
-        res.status(500).json({ error: "Internal server error" });
+        console.error("Error actualizando rol:", error);
+        res.status(500).json({ error: "Error interno del servidor" });
     }
 }
 
 // DELETE /api/roles/:id
 exports.deleteRole = async (req, res) => {
     try {
-        const numDeleted = await Role.destroy({ where: { id: req.params.id } });
+
+        const rol = await Role.findOne({
+            where: { id: req.params.id },
+        })
+       
+        if (rol.name === "Super Admin") {
+            res.status(403).json({ message: "No puedes borrar el rol Super Admin" });
+        }
+
+         const numDeleted = await Role.destroy({ where: { id: req.params.id  } });
         if (numDeleted) {
-            res.status(204).json({ message: "Role deleted successfully" });
+            res.status(204).json({ message: "Rol eliminado correctamente" });
         } else {
             res
                 .status(404)
-                .json({ message: `Role with id: ${req.params.id} not found` });
+                .json({ message: `Role con id: ${req.params.id} no encontrado` });
         }
     } catch (error) {
-        console.error("Error deleting role:", error);
-        res.status(500).json({ error: "Internal server error" });
+        console.error("Error eliminando rol:", error);
+        res.status(500).json({ error: "Error interno del servidor" });
     }
 }
 

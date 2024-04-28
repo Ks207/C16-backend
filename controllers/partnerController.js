@@ -24,12 +24,12 @@ exports.getAllPartners = async (req, res) => {
     if(response.data.length === 0 && name){
       return res
         .status(404)
-        .json({ message: `No partners found with name= "${name}"`});
+        .json({ message: `No partners encontrados con el nombre = "${name}"`});
     }
     res.json(response);
   } catch (error) {
-    console.error("Error retrieving partners: ", error);
-    res.status(500).json({ message: "Internal server error" })
+    console.error("Error obteniendo partners: ", error);
+    res.status(500).json({ message: "Error interno del servidor" })
   }
 };
 
@@ -40,12 +40,12 @@ exports.getPartnerById = async (req, res) => {
     if(!partner) {
       return res
         .status(404)
-        .json({ msg: `No partner with ID ${req.params.partnerId} was found.`});
+        .json({ msg: `No partner con ID ${req.params.partnerId} fue encontrado.`});
     }
     res.json(partner);
   } catch (error) {
-    console.error("Error validating partner id: ", error);
-    res.status(500).json({ message: "Internal server error"});
+    console.error("Error obteniendo partner: ", error);
+    res.status(500).json({ message: "Error interno del servidor" });
   }
 };
 
@@ -53,7 +53,7 @@ exports.getPartnerById = async (req, res) => {
 exports.createPartner = async(req,res)=>{
   try {
     const partnerUrl = validateUrl(req.body.url);
-    if(!partnerUrl) return res.status(400).json({ message: "Invalid Url" });
+    if(!partnerUrl) return res.status(400).json({ message: "URL invalida" });
     
     const userId = res.locals.user.uid;
     const { name, description, image } = req.body;
@@ -66,8 +66,8 @@ exports.createPartner = async(req,res)=>{
     })
     res.status(201).json(newPartner);
   } catch (error) {
-    console.error("Error creating a new partner: ", error);
-    res.status(500).json({ message:"Internal server error" });
+    console.error("Error creando partner: ", error);
+    res.status(500).json({ message:"Error interno del servidor" });
   }
 };
 
@@ -75,13 +75,13 @@ exports.createPartner = async(req,res)=>{
 exports.updatePartner = async (req, res) => {
   try {
     const partnerUrl = validateUrl(req.body.url);
-    if(!partnerUrl) return res.status(400).json({ message: "Invalid Url" });
+    if(!partnerUrl) return res.status(400).json({ message: "URL invalida" });
 
     const user = await User.findOne({
       where: {email: res.locals.user.email}
     });
     if(user.roleId === 3) {
-      return res.status(403).json({ message:'User not authorized' });
+      return res.status(403).json({ message:'Usuario no autorizado' });
     };
     const { name, description, image } = req.body;
     const numAffectedRows = await Partner.update({
@@ -97,11 +97,11 @@ exports.updatePartner = async (req, res) => {
       const updatedPartner = await Partner.findByPk(req.params.partnerId);
       res.status(200).json(updatedPartner);
     } else {
-      res.status(404).json({ message:`No partner with ID ${req.params.partnerId} found` });
+      res.status(404).json({ message:`No partner con ID ${req.params.partnerId} fue encontrado` });
     }
   } catch (error) {
-    console.error("Error updating partner: ", error);
-    res.status(500).json({ message:"Internal Server Error" });
+    console.error("Error actualizando partner: ", error);
+    res.status(500).json({ message:"Error interno del servidor" });
   }
 };
 
@@ -112,16 +112,16 @@ exports.deletePartner = async  (req, res) => {
       where:{ email: res.locals.user.email }
     });
     if(user.roleId === 3) {
-      return res.status(403).json({message:" User not authorized"});
+      return res.status(403).json({message:"Acceso denegado."});
     };
     const numPartnersDeleted = await Partner.destroy({ where:{ id:req.params.partnerId } });
     if(numPartnersDeleted) {
-      res.status(204).json({message:"Successfully deleted the partner."});
+      res.status(204).json({message:"Partner fue eliminado."});
     } else {
-      res.status(404).json({message:`No partner with ID ${req.params.partnerId} found`});
+      res.status(404).json({message:`No partner con ID ${req.params.partnerId} fue encontrado`});
     }
   } catch (error) {
-    console.error("Error deleting partner: ", error);
-    res.status(500).json({message:"Internal server error"});
+    console.error("Error eliminando partner: ", error);
+    res.status(500).json({message:"Error interno del servidor"});
   }
 };
