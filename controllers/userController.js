@@ -364,7 +364,7 @@ exports.uploadUserImage = async (req, res) => {
       try {
         await deleteImage(userToEdit.photo);
       } catch (error) {
-        console.error("Error deleting the previous image:", error);
+        console.error("Error al borrar la imagen anterior:", error);
       }
     }
 
@@ -375,9 +375,9 @@ exports.uploadUserImage = async (req, res) => {
     userToEdit.photo = imageUrl;
     await userToEdit.save();
 
-    res.status(200).json({ user: userToEdit, message: "Image updated successfully." });
+    res.status(200).json({ user: userToEdit, message: "Image cargada con éxito." });
   } catch (error) {
-    console.error("Error updating the image:", error);
+    console.error("Error al subir imagen", error);
     res.status(500).json({ error: "Internal server error" });
   }
 };
