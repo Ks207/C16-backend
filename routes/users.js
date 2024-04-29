@@ -1,6 +1,7 @@
 const router = require("express").Router();
 const userController = require("../controllers/userController");
 const authMiddleware = require("../middleware/authMiddleware");
+const upload = require("../middleware/multerMiddleware");
 const {
   validateNewUser,
   validateFinishUser,
@@ -271,5 +272,58 @@ router.delete("/users/:userId", validateDeleteUser ,authMiddleware ,userControll
  *               $ref: '#/components/schemas/ErrorResponse'
  */
 router.patch("/users/:userId", validateFinishUser,authMiddleware ,userController.updateUser);
+
+/**
+ * @swagger
+ * /api/users/{userId}/uploadUserImage:
+ *   patch:
+ *     summary: Upload and update user's image by ID
+ *     tags: [Users]
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the user to update the image for
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               image:
+ *                 type: string
+ *                 format: binary
+ *                 description: Image file to upload
+ *     responses:
+ *       200:
+ *         description: Image updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/User'
+ *       400:
+ *         description: No image attached or user not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       403:
+ *         description: User not authorized to update image
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ */
+
+router.patch("/users/:userId/uploadUserImage",upload.single("image"), authMiddleware ,userController.uploadUserImage);
 
 module.exports = router;
