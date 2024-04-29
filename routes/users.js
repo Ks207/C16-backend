@@ -1,6 +1,7 @@
 const router = require("express").Router();
 const userController = require("../controllers/userController");
 const authMiddleware = require("../middleware/authMiddleware");
+const upload = require("../middleware/multerMiddleware");
 const {
   validateNewUser,
   validateFinishUser,
@@ -271,5 +272,9 @@ router.delete("/users/:userId", validateDeleteUser ,authMiddleware ,userControll
  *               $ref: '#/components/schemas/ErrorResponse'
  */
 router.patch("/users/:userId", validateFinishUser,authMiddleware ,userController.updateUser);
+
+//TODO
+
+router.patch("/users/:userId/uploadUserImage",upload.single("image"), authMiddleware ,userController.uploadUserImage);
 
 module.exports = router;

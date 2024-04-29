@@ -6,7 +6,8 @@ const {
 } = require("../utils/paginationHelper");
 const { sendEmail } = require('../config/mailerConfig');
 const excelJS = require("exceljs");
-const firebaseAdminAuth = require("../config/firebase");
+const firebaseAdminAuth = require("../config/firebase").auth;
+const { uploadImage, deleteImage } = require('../utils/imageHelper');
 
 //GET /api/users/downloadExcel
 exports.exportUsers = async (req, res) => {
@@ -250,6 +251,16 @@ exports.deleteUser = async (req, res) => {
     if (!userToDelete) {
       return res.status(400).json({ message: "Usuario no encontrado" });
     }
+
+    // Delete the user's image if it exists
+    if (userToDelete.photo) {
+      try {
+        await deleteImage(userToDelete.photo);
+      } catch (error) {
+        console.error("Error borrando la imagen del usuario:", error);
+      }
+    }
+
     // Delete the user from Firebase
     try {
       await firebaseAdminAuth.deleteUser(userToDelete.dataValues.id);
@@ -259,16 +270,16 @@ exports.deleteUser = async (req, res) => {
         return res
           .status(500)
           .json({ error: "Error al borrar usuario de Firebase" });
-      }
     }
+}
 
     const numDeleted = await User.destroy({
       where: { id: req.params.userId },
     });
 
     if (numDeleted) {
-      return res.status(204).json({ message: "User borrado" });
-    } else {
+    return res.status(204).json({ message: "User borrado" });
+} else {
       return res.status(400).json({ message: `User con id: ${req.params.userId} no encontrado` });
     }
   } catch (error) {
@@ -318,6 +329,55 @@ exports.updateUser = async (req, res) => {
     }
   } catch (error) {
     console.error("Error actualizando usuario:", error);
-    return res.status(500).json({ error: "Error interno del servidor" });
+    return res.status(500).json({ error: "Error interno del servidor", details: error.message });
+  }
+};
+
+//PATCH /api/users/:userId/uploadUserImage
+exports.uploadUserImage = async (req, res) => {
+  try {
+    const requestingUser = await User.findOne({
+      where: { email: res.locals.user.email },
+    });
+
+    if (!requestingUser) {
+      return res.status(404).json({ message: "No se encontró el usuario" });
+    }
+
+    const userToEdit = await User.findByPk(req.params.userId);
+
+    if (!userToEdit) {
+      return res.status(404).json({ message: "No se encontró el usuario para editar" });
+    }
+
+  
+    if (requestingUser.roleId === 3 && requestingUser.id !== userToEdit.id) {
+      return res.status(403).json({ message: "No puedes actualizar este usuario" });
+    }
+
+    if (!req.file) {
+      return res.status(400).json({ message: "No hay imagen adjunta." });
+    }
+
+    // Delete the existing image if it exists
+    if (userToEdit.photo) {
+      try {
+        await deleteImage(userToEdit.photo);
+      } catch (error) {
+        console.error("Error deleting the previous image:", error);
+      }
+    }
+
+    // Upload the new image and get the URL
+    const imageUrl = await uploadImage(req.file.buffer, req.file.originalname, userToEdit.id);
+
+    // Update the user with the new image URL
+    userToEdit.photo = imageUrl;
+    await userToEdit.save();
+
+    res.status(200).json({ user: userToEdit, message: "Image updated successfully." });
+  } catch (error) {
+    console.error("Error updating the image:", error);
+    res.status(500).json({ error: "Internal server error" });
   }
 };
