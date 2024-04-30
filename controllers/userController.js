@@ -233,8 +233,8 @@ exports.deleteUser = async (req, res) => {
       where: { email: res.locals.user.email },
     });
 
-    if (user.roleId === 3) {
-      return res.status(403).json({ message: "User no autorizado." });
+    if (user.roleId === 3 || user.roleId === 2) {
+      return res.status(403).json({ message: "Solo super admin pueden borrar otros usuarios." });
     }
 
     if (user.roleId === 2) {
@@ -379,5 +379,42 @@ exports.uploadUserImage = async (req, res) => {
   } catch (error) {
     console.error("Error al subir imagen", error);
     res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+// PATCH /api/users/:userId/toggleEnabled
+exports.toggleUserEnabled = async (req, res) => {
+  try {
+    const user = await User.findOne({
+      where: {
+        email: res.locals.user.email,
+      }
+    });
+
+    if (user.roleId === 3) {
+       return res.status(403).json({ message: "No estás autorizado a realizar esta operación" });
+    }
+
+    const userToToggle = await User.findByPk(req.params.userId);
+    if (!userToToggle) {
+      return res.status(404).json({ message: "Usuario no encontrado." });
+    }
+
+
+    const { enabled } = req.body;
+    if (typeof enabled !== 'boolean') {
+      return res.status(400).json({ message: "El campo 'enabled' debe ser un valor booleano." });
+    }
+
+    userToToggle.enabled = enabled;
+    await userToToggle.save();
+
+    // firebase
+    await firebaseAdminAuth.updateUser(userToToggle.id, { disabled: !enabled });
+
+    res.status(200).json({ message: `Usuario ${enabled ? 'habilitado' : 'deshabilitado'} correctamente.` });
+  } catch (error) {
+    console.error(`Error ${req.body.enabled ? 'habilitando' : 'deshabilitando'} usuario:`, error);
+    res.status(500).json({ error: "Error interno del servidor", details: error.message });
   }
 };
