@@ -1,4 +1,4 @@
-const { body } = require("express-validator");
+const { body, header } = require("express-validator");
 const { validateResult } = require("./validateResult");
 
 exports.validateNewResource = [
