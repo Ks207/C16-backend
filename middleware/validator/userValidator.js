@@ -82,3 +82,23 @@ exports.validateDeleteUser = [
     .escape(),
     validateResult
 ]
+
+exports.validateUserImage = [
+    header("Authorization")
+    .notEmpty()
+    .withMessage("Header es requerido!")
+    .isString()
+    .withMessage("Header tiene que ser una cadena de texto")
+    .escape(),
+    validateResult
+]
+
+exports.validateToggleUser = [
+    header("Authorization")
+    .notEmpty()
+    .withMessage("Header es requerido!")
+    .isString()
+    .withMessage("Header tiene que ser una cadena de texto")
+    .escape(),
+    validateResult
+]

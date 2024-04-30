@@ -4,6 +4,8 @@ const resourceController = require("../controllers/resourceController");
 const upload = require("../middleware/multerMiddleware");
 const {
   validateNewResource,
+  validateUpdateResource,
+  validateDeleteResource
 } = require("../middleware/validator/resourceValidator");
 const authMiddleware = require("../middleware/authMiddleware");
 
@@ -165,7 +167,7 @@ router.post(
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.put("/resources/:id", upload.single("image"), authMiddleware, resourceController.updateResource);
+router.put("/resources/:id", upload.single("image"), validateUpdateResource, authMiddleware, resourceController.updateResource);
 
 /**
  * @swagger
@@ -195,6 +197,6 @@ router.put("/resources/:id", upload.single("image"), authMiddleware, resourceCon
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.delete("/resources/:id", authMiddleware, resourceController.deleteResource);
+router.delete("/resources/:id", validateDeleteResource, authMiddleware, resourceController.deleteResource);
 
 module.exports = router;
