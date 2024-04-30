@@ -11,7 +11,7 @@ const Like = require("./like");
 // relationships
 User.belongsTo(Role, { foreignKey: "roleId" });
 
-Post.belongsTo(User, { foreignKey: "userId", as: "user", onDelete: 'CASCADE' });
+Post.belongsTo(User, { foreignKey: "userId", as: "user" });
 Post.hasMany(Post, { as: "replies", foreignKey: "parentId", onDelete: 'CASCADE' });
 Post.hasMany(Like, { foreignKey: "postId", onDelete: 'CASCADE' });
 
@@ -22,11 +22,11 @@ User.hasMany(Report, { foreignKey: "author", as: "authoredReports", onDelete: 'C
 User.hasMany(Partner, { foreignKey: "userId", as: "partners", onDelete: 'CASCADE' });
 User.hasMany(Like, { foreignKey: "userId", as: "likes", onDelete: 'CASCADE' });
 
-Resource.belongsTo(User, { foreignKey: "userId", onDelete: 'CASCADE' });
-Material.belongsTo(User, { foreignKey: "userId", onDelete: 'CASCADE' });
-Report.belongsTo(User, { foreignKey: "author", as: "authorUser", onDelete: 'CASCADE' });
-Report.belongsTo(User, { foreignKey: "userId", as: "reportedUser" });
-Partner.belongsTo(User, { foreignKey: "userId", onDelete: 'CASCADE' });
+Resource.belongsTo(User, { foreignKey: "userId" });
+Material.belongsTo(User, { foreignKey: "userId" });
+Report.belongsTo(User, { foreignKey: "userId", as: "ReportAuthor" });
+Report.belongsTo(User, { foreignKey: "author", as: "PostAuthor" });
+Partner.belongsTo(User, { foreignKey: "userId" });
 
 module.exports = {
   Role,
