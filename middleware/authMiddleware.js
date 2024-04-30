@@ -19,8 +19,8 @@ const validateFirebaseToken = async (req, res, next) => {
     res.locals.user = userData;
     next();
   } catch (error) {
-    console.error("Error validando token de Firebase:", error);
-    return res.status(403).json({ error: "No autorizado!" });
+    console.error("Error validando token de Firebase:", error.code);
+    return res.status(401).json({ message: "Id token ha expirado", error: error.code });
   }
 
 };
