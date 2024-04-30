@@ -7,7 +7,8 @@ const {
   validateFinishUser,
   validateNewAdmin,
   validateDeleteUser,
-  validateUserImage
+  validateUserImage,
+  validateToggleUser
 } = require("../middleware/validator/userValidator");
 
 /**
@@ -376,6 +377,6 @@ router.patch("/users/:userId/uploadUserImage", upload.single("image"), validateU
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.patch("/users/:userId/toggleEnabled", authMiddleware, userController.toggleUserEnabled);
+router.patch("/users/:userId/toggleEnabled", validateToggleUser, authMiddleware, userController.toggleUserEnabled);
 
 module.exports = router;
