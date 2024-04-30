@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const postController = require("../controllers/postController");
-const { validateNewPost } = require("../middleware/validator/postValidator");
+const { validateNewPost, validateUpdatePost, validateDeletePost, validateLikePost } = require("../middleware/validator/postValidator");
 const authMiddleware = require("../middleware/authMiddleware");
 
 /**
@@ -154,7 +154,7 @@ router.post(
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.put("/posts/:id", authMiddleware, postController.updatePost);
+router.put("/posts/:id", validateUpdatePost, authMiddleware, postController.updatePost);
 
 /**
  * @swagger
@@ -184,7 +184,7 @@ router.put("/posts/:id", authMiddleware, postController.updatePost);
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.delete("/posts/:id", authMiddleware, postController.deletePost);
+router.delete("/posts/:id", validateDeletePost, authMiddleware, postController.deletePost);
 
 /**
  * @swagger
@@ -221,6 +221,6 @@ router.delete("/posts/:id", authMiddleware, postController.deletePost);
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.post("/posts/:postId/like", authMiddleware, postController.likePost);
+router.post("/posts/:postId/like", validateLikePost, authMiddleware, postController.likePost);
 
 module.exports = router;
