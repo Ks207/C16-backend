@@ -63,6 +63,11 @@ const User = sequelize.define(
       type: Sequelize.INTEGER,
       allowNull: false,
       defaultValue: 3,
+    },
+    enabled: {
+      type: Sequelize.BOOLEAN,
+      allowNull: false,
+      defaultValue: true
     }
   },
   {

@@ -327,4 +327,55 @@ router.patch("/users/:userId", validateFinishUser,authMiddleware ,userController
 
 router.patch("/users/:userId/uploadUserImage", upload.single("image"), validateUserImage, authMiddleware , userController.uploadUserImage);
 
+/**
+ * @swagger
+ * /api/users/{userId}/toggleEnabled:
+ *   patch:
+ *     summary: Enable or disable a user by ID
+ *     tags: [Users]
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the user to toggle enabled status
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               enabled:
+ *                 type: boolean
+ *                 description: Boolean flag to enable or disable the user
+ *     responses:
+ *       200:
+ *         description: User enabled/disabled successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/User'
+ *       400:
+ *         description: Invalid input or user not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       403:
+ *         description: User not authorized to perform this action
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ */
+router.patch("/users/:userId/toggleEnabled", authMiddleware, userController.toggleUserEnabled);
+
 module.exports = router;
