@@ -233,8 +233,8 @@ exports.deleteUser = async (req, res) => {
       where: { email: res.locals.user.email },
     });
 
-    if (user.roleId === 3) {
-      return res.status(403).json({ message: "User no autorizado." });
+    if (user.roleId === 3 || user.roleId === 2) {
+      return res.status(403).json({ message: "Solo super admin pueden borrar otros usuarios." });
     }
 
     if (user.roleId === 2) {
