@@ -32,6 +32,9 @@ const options = {
               type: "boolean",
               default: false,
             },
+            image: {
+              type: "string",
+            },
             createdAt: {
               type: "string",
               format: "date-time",
@@ -41,7 +44,7 @@ const options = {
               format: "date-time",
             },
           },
-          required: ["userId", "description", "comuna"],
+          required: ["userId", "description", "comuna", "image"], // Updated required fields
         },
         ResourceInput: {
           type: "object",
@@ -62,8 +65,11 @@ const options = {
               type: "boolean",
               default: false,
             },
+            image: {
+              type: "string",
+            },
           },
-          required: ["userId", "description", "comuna"],
+          required: ["userId", "description", "comuna", "image"], 
         },
         ResourcesResponse: {
           type: "object",
