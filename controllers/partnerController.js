@@ -57,8 +57,17 @@ exports.createPartner = async(req,res)=>{
     const partnerUrl = validateUrl(req.body.url);
     if(!partnerUrl) return res.status(400).json({ message: "Url invalida. Incluir http:// o https://" });
     
+    const user = await User.findOne({
+      where: {email: res.locals.user.email}
+    });
+
     const userId = res.locals.user.uid;
-    const { name, description, image } = req.body;
+    
+    if(user.roleId === 3) {
+      return res.status(403).json({ message:'Usuario no Autorizado' });
+    };
+
+    const { name, description } = req.body;
     let imageUrl = "";
     if(req.file){
       imageUrl = await uploadImage(req.file.buffer, req.file.originalname, userId);
