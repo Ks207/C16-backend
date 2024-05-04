@@ -190,7 +190,7 @@ exports.likePost = async (req, res) => {
       res.status(200).json({ message: "Like removido" });
     } else {
       await Like.create({ userId, postId });
-      res.status(201).json({ message: "Like agregado" });
+      res.status(200).json({ message: "Like agregado" });
     }
   } catch (error) {
     console.error("Error al dar like:", error);
