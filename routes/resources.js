@@ -24,6 +24,11 @@ const authMiddleware = require("../middleware/authMiddleware");
  *     tags: [Resources]
  *     parameters:
  *       - in: query
+ *         name: search
+ *         schema:
+ *           type: string
+ *         description: Search term to filter resources by description
+ *       - in: query
  *         name: comuna
  *         schema:
  *           type: string
