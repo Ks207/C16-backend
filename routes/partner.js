@@ -22,6 +22,22 @@ const {
  *    summary: Get all partners
  *    description: Returns a list of all available partners.
  *    tags: [Partners]
+ *    parameters:
+ *      - in: query
+ *        name: search
+ *        schema:
+ *          type: string
+ *        description: Search by name or description
+ *      - in: query
+ *        name: page    
+ *        schema:
+ *          type: integer
+ *          description:  Number of the current page (default is 1)
+ *      - in: query
+ *        name: size
+ *        schema:
+ *          type: integer
+ *        description: Maximum number of items per page (default is 10)
  *    responses:
  *      200:
  *        description: A list of partners is returned.
@@ -47,7 +63,7 @@ router.get("/partners", partnerController.getAllPartners);
 
 /**
  * @swagger
- * /api/partners/{id}:
+ * /api/partners/{partnerId}:
  *  get:
  *    summary: Get a specific partner by id
  *    tags: [Partners]
@@ -100,6 +116,18 @@ router.get("/partners/:partnerId", partnerController.getPartnerById);
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Partner'
+ *       400:
+ *          description: Bad Request, Invalid Url
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/ErrorResponse'
+ *       403:
+ *          description: Not  authorized to create partners
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/ErrorResponse'
  *       500:
  *          description: "Couldn't create new partner in DB"
  *          content:
@@ -193,7 +221,7 @@ router.put("/partners/:partnerId", upload.single("image"), validateUpdatePartner
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/ErrorResponse'
+ *               $ref: '#/components/schemas/ServerError'
  */
 
 router.delete("/partners/:partnerId", validateDeletePartner, authMiddleware, partnerController.deletePartner);

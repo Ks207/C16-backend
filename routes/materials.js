@@ -55,7 +55,7 @@ const authMiddleware = require("../middleware/authMiddleware");
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/ErrorResponse'
+ *               $ref: '#/components/schemas/ServerResponse'
  */
 router.get("/materials", materialController.getAllMaterials);
 
@@ -89,7 +89,7 @@ router.get("/materials", materialController.getAllMaterials);
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/ErrorResponse'
+ *               $ref: '#/components/schemas/ServerResponse'
  */
 router.get("/materials/:id", materialController.getMaterialsById);
 
@@ -114,12 +114,18 @@ router.get("/materials/:id", materialController.getMaterialsById);
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Material'
+ *       400:
+ *         description: Url not valid
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
  *       500:
  *         description: Internal server error
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/ErrorResponse'
+ *               $ref: '#/components/schemas/ServerError'
  */
 router.post(
   "/materials",
@@ -155,6 +161,12 @@ router.post(
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Material'
+ *       403:
+ *         description: Not authorized to edit this material
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/responses/ErrorResponse'
  *       404:
  *         description: Material not found
  *         content:
@@ -166,7 +178,7 @@ router.post(
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/ErrorResponse'
+ *               $ref: '#/components/schemas/ServerError'
  */
 router.put("/materials/:id", validateUpdateMaterial, authMiddleware, materialController.updateMaterials);
 
@@ -187,6 +199,12 @@ router.put("/materials/:id", validateUpdateMaterial, authMiddleware, materialCon
  *     responses:
  *       204:
  *         description: Material deleted successfully
+ *       403:
+ *         description: User does not have permission to perform this action
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
  *       404:
  *         description: Material not found
  *         content:
@@ -198,7 +216,7 @@ router.put("/materials/:id", validateUpdateMaterial, authMiddleware, materialCon
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/ErrorResponse'
+ *               $ref: '#/components/schemas/ServerError'
  */
 router.delete("/materials/:id", validateDeleteMaterial, authMiddleware, materialController.deleteMaterials);
 
