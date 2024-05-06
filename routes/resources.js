@@ -205,6 +205,3 @@ router.put("/resources/:id", upload.single("image"), validateUpdateResource, aut
 router.delete("/resources/:id", validateDeleteResource, authMiddleware, resourceController.deleteResource);
 
 module.exports = router;
-module.exports = router;
-module.exports = router;
-module.exports = router;
