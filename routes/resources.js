@@ -34,6 +34,11 @@ const authMiddleware = require("../middleware/authMiddleware");
  *           type: string
  *         description: Filter resources by comuna
  *       - in: query
+ *         name: title
+ *         schema:
+ *           type: string
+ *         description: Search term to filter resources by title
+ *       - in: query
  *         name: page
  *         schema:
  *           type: integer
@@ -204,4 +209,5 @@ router.put("/resources/:id", upload.single("image"), validateUpdateResource, aut
  */
 router.delete("/resources/:id", validateDeleteResource, authMiddleware, resourceController.deleteResource);
 
+module.exports = router;
 module.exports = router;
