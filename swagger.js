@@ -35,6 +35,9 @@ const options = {
             image: {
               type: "string",
             },
+            title: {
+              type: "string",
+            },
             createdAt: {
               type: "string",
               format: "date-time",
@@ -66,6 +69,9 @@ const options = {
               default: false,
             },
             image: {
+              type: "string",
+            },
+            title: {
               type: "string",
             },
           },

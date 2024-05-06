@@ -16,11 +16,13 @@ exports.getAllResources = async (req, res) => {
     );
     const searchTerm = req.query.search || "";
     const comunaFilter = req.query.comuna || "";
+    const titleFilter = req.query.title || "";
 
     const { count, rows } = await Resource.findAndCountAll({
       where: {
         ...(searchTerm && { description: { [Op.iLike]: `%${searchTerm}%` } }),
         ...(comunaFilter && { comuna: { [Op.iLike]: comunaFilter } }),
+        ...(titleFilter && { title: { [Op.iLike]: `%${titleFilter}%` } }),
       },
       offset,
       limit: pageSize,
@@ -58,7 +60,7 @@ exports.getResourceById = async (req, res) => {
 exports.createResource = async (req, res) => {
   try {
     const userId = res.locals.user.uid;
-    const { description, comuna, url, highlighted } = req.body;
+    const { description, comuna, url, highlighted, title } = req.body;
     let imageUrl = '';
     if (req.file) {
       imageUrl = await uploadImage(req.file.buffer, req.file.originalname, userId);
@@ -75,6 +77,7 @@ exports.createResource = async (req, res) => {
       url,
       image: imageUrl,
       highlighted,
+      title,
     });
     res.status(201).json(newResource);
   } catch (error) {
@@ -95,7 +98,7 @@ exports.updateResource = async (req, res) => {
     }
 
     const userId = res.locals.user.uid;
-    const { description, comuna, url, highlighted } = req.body;
+    const { description, comuna, url, highlighted, title } = req.body;
     let imageUrl = req.body.image;
 
     if (req.file) {
@@ -115,7 +118,7 @@ exports.updateResource = async (req, res) => {
     }
 
     const numAffectedRows = await Resource.update(
-      { description, comuna, image: imageUrl, url, highlighted },
+      { description, comuna, image: imageUrl, url, highlighted, title },
       { where: { id: req.params.id } }
     );
 

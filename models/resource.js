@@ -27,6 +27,10 @@ const Resource = sequelize.define(
     image:{
       type: Sequelize.STRING,
       allowNull: false
+    },
+    title: {
+      type: Sequelize.STRING,
+      allowNull: false,
     }
   },
   {
@@ -36,4 +40,5 @@ const Resource = sequelize.define(
   }
 );
 
+module.exports = Resource;
 module.exports = Resource;
