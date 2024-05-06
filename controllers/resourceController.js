@@ -16,13 +16,14 @@ exports.getAllResources = async (req, res) => {
     );
     const searchTerm = req.query.search || "";
     const comunaFilter = req.query.comuna || "";
-    const titleFilter = req.query.title || "";
 
     const { count, rows } = await Resource.findAndCountAll({
       where: {
-        ...(searchTerm && { description: { [Op.iLike]: `%${searchTerm}%` } }),
+        [Op.or]: [
+          { title: { [Op.iLike]: `%${searchTerm}%` } },
+          { description: { [Op.iLike]: `%${searchTerm}%` } }
+        ],
         ...(comunaFilter && { comuna: { [Op.iLike]: comunaFilter } }),
-        ...(titleFilter && { title: { [Op.iLike]: `%${titleFilter}%` } }),
       },
       offset,
       limit: pageSize,
