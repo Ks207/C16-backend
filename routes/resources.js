@@ -27,17 +27,12 @@ const authMiddleware = require("../middleware/authMiddleware");
  *         name: search
  *         schema:
  *           type: string
- *         description: Search term to filter resources by description
+ *         description: Search term to filter resources by both title and description
  *       - in: query
  *         name: comuna
  *         schema:
  *           type: string
  *         description: Filter resources by comuna
- *       - in: query
- *         name: title
- *         schema:
- *           type: string
- *         description: Search term to filter resources by title
  *       - in: query
  *         name: page
  *         schema:
@@ -50,7 +45,7 @@ const authMiddleware = require("../middleware/authMiddleware");
  *         description: Number of items per page for pagination
  *     responses:
  *       200:
- *         description: Successful response
+ *         description: Successful response, returns filtered resources
  *         content:
  *           application/json:
  *             schema:
@@ -209,5 +204,7 @@ router.put("/resources/:id", upload.single("image"), validateUpdateResource, aut
  */
 router.delete("/resources/:id", validateDeleteResource, authMiddleware, resourceController.deleteResource);
 
+module.exports = router;
+module.exports = router;
 module.exports = router;
 module.exports = router;
