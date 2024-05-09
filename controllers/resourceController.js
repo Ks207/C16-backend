@@ -67,7 +67,8 @@ exports.createResource = async (req, res) => {
       imageUrl = await uploadImage(req.file.buffer, req.file.originalname, userId);
     }
 
-    if (highlighted) {
+    // Check explicitly if highlighted is true
+    if (highlighted === true) {
       await Resource.update({ highlighted: false }, { where: { highlighted: true } });
     }
 
