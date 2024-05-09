@@ -1,6 +1,6 @@
 const { Material } = require("../models/index");
 const { User } = require("../models/index");
-const { Op } = require("sequelize");
+const { Op, Sequelize } = require("sequelize");
 const {
   getPagination,
   getPaginationData,
@@ -11,46 +11,63 @@ const { getId } = require("../utils/youtubeHelper");
 // /api/materials //return default size 4 materials
 // /api/materials?title=some-material-title //return material by title
 // /api/materials?page=page-number //return specific page
-exports.getAllMaterials = async (req, res) => {
-  const { page, size } = req.query;
-  const searchTerm = req.query.search || "";
-  const { currentPage, pageSize, offset } = getPagination(page, size);
-  try {
-    const { count, rows } = await Material.findAndCountAll({
-      where: {
-        [Op.or]: [
-          { title: { [Op.iLike]: `%${searchTerm}%` } },
-          { description: { [Op.iLike]: `%${searchTerm}%` } },
-        ]
-      },
-      offset,
-      limit: pageSize,
-      order: [["createdAt", "DESC"]],
-    });
-    const response = getPaginationData({ count, rows }, currentPage, pageSize);
-    res.json(response);
-  } catch (error) {
-    console.error("Error obteniendo materiales:", error);
-    res.status(500).json({ error: "Error interno del servidor" });
-  }
-};
+  exports.getAllMaterials = async (req, res) => {
+     const { page, size } = req.query;
+     const searchTerm = req.query.search || "";
+     const { currentPage, pageSize, offset } = getPagination(page, size);
+     try {
+       const { count, rows } = await Material.findAndCountAll({
+         include: [{
+           model: User,
+           attributes: []
+         }],
+         attributes: {
+           include: [
+             [Sequelize.fn('concat', Sequelize.col('User.firstname'), ' ', Sequelize.col('User.lastname')), 'author']
+           ]
+         },
+         where: {
+           [Op.or]: [
+             { title: { [Op.iLike]: `%${searchTerm}%` } },
+             { description: { [Op.iLike]: `%${searchTerm}%` } },
+           ]
+         },
+         offset,
+         limit: pageSize,
+         order: [["createdAt", "DESC"]],
+       });
+       const response = getPaginationData({ count, rows }, currentPage, pageSize);
+       res.json(response);
+     } catch (error) {
+       console.error("Error obteniendo materiales:", error);
+       res.status(500).json({ error: "Error interno del servidor" });
+     }
+   };
 
 // GET /api/materials/:id
 exports.getMaterialsById = async (req, res) => {
-  try {
-    const material = await Material.findByPk(req.params.id);
-    if (material) {
-      res.json(material);
-    } else {
-      res
-        .status(404)
-        .json({ message: `Material con id=${req.params.id} no encontrado` });
-    }
-  } catch (error) {
-    console.error("Error obteniendo material: ", error);
-    res.status(500).json({ error: "Error interno del servidor" });
-  }
-};
+     try {
+       const material = await Material.findByPk(req.params.id, {
+         include: [{
+           model: User,
+           attributes: []
+         }],
+         attributes: {
+           include: [
+             [Sequelize.fn('concat', Sequelize.col('User.firstname'), ' ', Sequelize.col('User.lastname')), 'author']
+           ]
+         }
+       });
+       if (material) {
+         res.json(material);
+       } else {
+         res.status(404).json({ message: `Material con id=${req.params.id} no encontrado` });
+       }
+     } catch (error) {
+       console.error("Error obteniendo material: ", error);
+       res.status(500).json({ error: "Error interno del servidor" });
+     }
+   };
 
 // POST /api/materials
 exports.createMaterials = async (req, res) => {
