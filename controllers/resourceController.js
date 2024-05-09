@@ -115,7 +115,7 @@ exports.updateResource = async (req, res) => {
       }
     }
 
-    if (highlighted) {
+    if (highlighted === true) {
       await Resource.update({ highlighted: false }, { where: { highlighted: true } });
     }
 
