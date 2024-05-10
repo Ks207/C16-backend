@@ -61,8 +61,10 @@ exports.getResourceById = async (req, res) => {
 exports.createResource = async (req, res) => {
   try {
     const userId = res.locals.user.uid;
-    const { description, comuna, url, highlighted, title } = req.body;
+    const { description, comuna, url, title } = req.body;
+    let highlighted = req.body.highlighted === 'true' || req.body.highlighted === true;
     let imageUrl = '';
+
     if (req.file) {
       imageUrl = await uploadImage(req.file.buffer, req.file.originalname, userId);
     }
@@ -100,22 +102,27 @@ exports.updateResource = async (req, res) => {
     }
 
     const userId = res.locals.user.uid;
-    const { description, comuna, url, highlighted, title } = req.body;
+    const { description, comuna, url, title } = req.body;
     let imageUrl = req.body.image;
+    let highlighted = req.body.highlighted === 'true' || req.body.highlighted === true;
+
+    const resourceToUpdate = await Resource.findByPk(req.params.id);
+    if (!resourceToUpdate) {
+      return res.status(404).json({ message: `Recurso con id=${req.params.id} no encontrado` });
+    }
+    
 
     if (req.file) {
-      const resourceToUpdate = await Resource.findByPk(req.params.id);
-      if (resourceToUpdate) {
-        try {
-          await deleteImage(resourceToUpdate.image);
-        } catch (error) {
-          console.log("Ocurrio un error al borrar la imagen:", error);
-        }
-        imageUrl = await uploadImage(req.file.buffer, req.file.originalname, userId);
+      try {
+        await deleteImage(resourceToUpdate.image);
+      } catch (error) {
+        console.log("Ocurrio un error al borrar la imagen:", error);
       }
+      imageUrl = await uploadImage(req.file.buffer, req.file.originalname, userId);
     }
 
-    if (highlighted === true) {
+    
+    if (highlighted && !resourceToUpdate.highlighted) {
       await Resource.update({ highlighted: false }, { where: { highlighted: true } });
     }
 
